@@ -22,4 +22,8 @@ public function register(RegisterRequest $request){
     return redirect()->route('logements.index');
 } 
 
+public function showLogin(){
+    return view('auth.login');
+}
+
 }
