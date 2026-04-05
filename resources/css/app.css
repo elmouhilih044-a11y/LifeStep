@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Fonts ─── */
+body {
+    font-family: 'DM Sans', sans-serif;
+    background: #ffffff;
+    color: #1A1A1A;
+}
+h1, h2, h3, h4, .font-display {
+    font-family: 'Syne', sans-serif;
+}
+
+/* ─── Card hover ─── */
+.logement-card {
+    transition: all 0.2s ease;
+}
+.logement-card:hover {
+    box-shadow: 0 8px 32px rgba(0, 102, 255, 0.10);
+    transform: translateY(-2px);
+    border-color: #C8D8FF;
+}
+
+/* ─── Transitions ─── */
+.btn-t {
+    transition: all 0.15s ease;
+}
+
+/* ─── Checkbox pill (ne peut pas être géré par Tailwind seul) ─── */
+.pill-check input[type="checkbox"] {
+    display: none;
+}
+.pill-check input[type="checkbox"]:checked + label {
+    background-color: #0066FF;
+    color: #ffffff;
+    border-color: #0066FF;
+}
+
+/* ─── Galerie photo active ─── */
+.thumb-active {
+    border-color: #0066FF !important;
+}
+
+/* ─── Input focus ring ─── */
+.input-field:focus {
+    outline: none;
+    border-color: #0066FF;
+}
+
+/* ─── Select arrow ─── */
+select.input-field {
+    appearance: none;
+    cursor: pointer;
+}

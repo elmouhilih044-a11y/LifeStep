@@ -1,0 +1,41 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('logements', function (Blueprint $table) {
+    $table->id();
+    $table->string('title');
+    $table->string('type');
+    $table->decimal('price', 10, 2);
+    $table->string('address');
+    $table->string('city');
+    $table->integer('bathrooms');
+    $table->integer('bedrooms');
+    $table->decimal('surface', 8, 2);        
+    $table->integer('floor')->nullable(); 
+    $table->enum('status', ['available', 'reserved', 'rented', 'sold']);
+    $table->text('description')->nullable();
+    $table->string('phone', 20);
+    $table->foreignId('user_id')->constrained()->onDelete('cascade');
+
+    $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('logements');
+    }
+};
