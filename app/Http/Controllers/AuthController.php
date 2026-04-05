@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use Illuminate\Http\Request;
 use App\Models\User;
@@ -24,6 +25,20 @@ public function register(RegisterRequest $request){
 
 public function showLogin(){
     return view('auth.login');
+}
+
+public function login(LoginRequest $request){
+$data=$request->validated();
+
+if(Auth::attempt($data)){
+    $request->session()->regenerate();
+   return redirect()->route('logements.index');
+}
+else{
+    return back()->withErrors([
+        'error'=>'Email ou mot de passe incorrect'
+    ]);
+}
 }
 
 }
