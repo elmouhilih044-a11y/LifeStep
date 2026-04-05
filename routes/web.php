@@ -13,3 +13,6 @@ Route::resource('logements', LogementController::class);
 
 Route::get('/register',[AuthController::class,'showRegister'])->name('register');
 
+
+Route::post('/register',[AuthController::class,'register'])->name('register.post');
+
