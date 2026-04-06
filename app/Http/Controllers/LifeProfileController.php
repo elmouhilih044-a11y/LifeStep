@@ -22,7 +22,7 @@ class LifeProfileController extends Controller
      */
     public function create()
     {
-        //
+        return view('life_profiles.create');
     }
 
     /**
@@ -45,9 +45,14 @@ class LifeProfileController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show()
     {
-        //
+        $profil=LifeProfile::where('user_id',Auth::id())->first();
+       if (!$profil) {
+        return redirect()->route('life_profiles.create');
+    }
+
+    return view('life_profiles.show', compact('profil'));
     }
 
     /**
