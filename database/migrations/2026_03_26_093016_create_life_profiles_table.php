@@ -14,16 +14,18 @@ return new class extends Migration
         Schema::create('life_profiles', function (Blueprint $table) {
 $table->id();
 
-    $table->enum('type', ['etudiant', 'famille', 'couple']);
+$table->enum('profile_type', ['etudiant', 'famille', 'couple']);
 
-    $table->decimal('budget_min', 10, 2)->nullable();
-    $table->decimal('budget_max', 10, 2)->nullable();
+$table->decimal('budget_min', 10, 2)->nullable();
+$table->decimal('budget_max', 10, 2)->nullable();
 
-    $table->string('location')->nullable();
+$table->string('location')->nullable();
 
-    $table->foreignId('user_id')->unique()->constrained()->onDelete('cascade');
+$table->string('search_type'); 
 
-    $table->timestamps();
+$table->foreignId('user_id')->unique()->constrained()->onDelete('cascade');
+
+$table->timestamps();
         });
     }
 

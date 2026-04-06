@@ -6,20 +6,17 @@ use Illuminate\Database\Eloquent\Model;
 
 class LifeProfile extends Model
 {
-   protected $fillable = [
-        'type',
+    protected $fillable = [
+        'profile_type',
         'budget_min',
         'budget_max',
         'location',
+        'search_type',
         'user_id'
     ];
 
-      public function user()
+    public function user()
     {
         return $this->belongsTo(User::class);
-    }
-       public function compatibilities()
-    {
-        return $this->hasMany(Compatibility::class);
     }
 }
