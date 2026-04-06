@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreLifeProfileRequest;
+use App\Models\LifeProfile;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LifeProfileController extends Controller
 {
@@ -25,9 +28,18 @@ class LifeProfileController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreLifeProfileRequest $request)
     {
-        //
+        $data=$request->validated();
+          $existingProfile=LifeProfile::where('user_id', Auth::id())->first();
+        if($existingProfile){
+            return back()->withErrors([
+       'error'=>'Vous avez déjà un profil de vie'
+            ]);
+        }
+        $data['user_id']=Auth::id();
+        LifeProfile::create($data);
+        return redirect()->route('logements.index');
     }
 
     /**
