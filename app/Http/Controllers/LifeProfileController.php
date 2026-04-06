@@ -58,10 +58,16 @@ class LifeProfileController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
-    {
-        //
+   public function edit()
+{
+    $profil = LifeProfile::where('user_id', Auth::id())->first();
+
+    if (!$profil) {
+        return redirect()->route('life_profiles.create');
     }
+
+    return view('life_profiles.edit', compact('profil'));
+}
 
     /**
      * Update the specified resource in storage.
