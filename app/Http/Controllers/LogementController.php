@@ -6,15 +6,24 @@ use Illuminate\Http\Request;
 use App\Models\Logement;
 use App\Http\Requests\StoreLogementRequest;
 use App\Http\Requests\UpdateLogementRequest;
+use App\Services\CompatibilityService;
+use Illuminate\Support\Facades\Auth;
 
 class LogementController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(CompatibilityService $compatibilityService)
     {
+        $profile = Auth::user()->lifeProfile;
         $logements = Logement::with('tags', 'badges', 'pictures')->where('status', 'available')->get();
+
+        foreach ($logements as $logement) {
+            $result = $compatibilityService->calculate($profile, $logement);
+            $logement->score = $result['score'];
+            $logement->label = $result['label'];
+        }
 
         return view('logements.index', compact('logements'));
     }
