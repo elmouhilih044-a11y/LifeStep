@@ -76,7 +76,16 @@ class CompatibilityService
             }
               return 0;
         }
+ 
+        public function calculate($lifeProfile,$logement){
+            $score=0;
+            $score+=$this->budgetScore($lifeProfile, $logement);
+              $score += $this->cityScore($lifeProfile, $logement);
+    $score += $this->profileTypeScore($lifeProfile, $logement);
+    $score += $this->availabilityScore($logement);
 
+    return $score;
+        }
       
     
 }
