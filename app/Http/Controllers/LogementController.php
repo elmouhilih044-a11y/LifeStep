@@ -14,7 +14,7 @@ class LogementController extends Controller
      */
     public function index()
     {
-        $logements = Logement::with('tags', 'badges', 'pictures')->where('status', 'disponible')->get();
+        $logements = Logement::with('tags', 'badges', 'pictures')->where('status', 'available')->get();
 
         return view('logements.index', compact('logements'));
     }
