@@ -86,6 +86,23 @@ class CompatibilityService
 
     return $score;
         }
+
+    public function label($score)
+{
+    if ($score >= 80) {
+        return 'Très compatible';
+    }
+
+    if ($score >= 60) {
+        return 'Compatible';
+    }
+
+    if ($score >= 40) {
+        return 'Moyennement compatible';
+    }
+
+    return 'Peu compatible';
+}
       
     
 }
