@@ -24,7 +24,7 @@ class LogementController extends Controller
             $logement->score = $result['score'];
             $logement->label = $result['label'];
         }
-
+$logements = $logements->sortByDesc('score')->values();
         return view('logements.index', compact('logements'));
     }
 
