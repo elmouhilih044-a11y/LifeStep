@@ -24,5 +24,13 @@ return 0;
 
 }
 
+public function cityScore($lifeProfile,$logement){
+    $cityProfile=$lifeProfile->location;
+    $cityLogement=$logement->city;
 
+    if(strtolower($cityProfile) === strtolower($cityLogement)){
+        return 25;
+    }
+    return 0;
+}
 }
