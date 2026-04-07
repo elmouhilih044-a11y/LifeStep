@@ -84,7 +84,10 @@ class CompatibilityService
     $score += $this->profileTypeScore($lifeProfile, $logement);
     $score += $this->availabilityScore($logement);
 
-    return $score;
+    return [
+        'score' => $score,
+        'label' => $this->label($score)
+    ];
         }
 
     public function label($score)
