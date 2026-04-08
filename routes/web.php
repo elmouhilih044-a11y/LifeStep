@@ -7,7 +7,16 @@ use App\Http\Controllers\LogementController;
 
 
 Route::get('/', function () {
-    return view('welcome');
+    $stats = [
+        'total' => 0,
+        'dispo' => 0,
+        'villes' => 0,
+        'prix' => '–',
+    ];
+
+    $recent = collect();
+
+    return view('welcome', compact('stats', 'recent'));
 })->name('home');
 
 Route::resource('logements', LogementController::class)
