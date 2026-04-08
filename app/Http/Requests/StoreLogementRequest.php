@@ -33,6 +33,7 @@ class StoreLogementRequest extends FormRequest
         'status' => 'required|in:available,reserved,rented,sold',
         'description' => 'nullable|string',
         'phone' => 'required|string|max:20',
+        'surface' => 'required|numeric|min:0',
         'user_id' => 'required|exists:users,id',
     ];
 }

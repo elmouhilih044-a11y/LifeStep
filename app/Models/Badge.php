@@ -10,7 +10,8 @@ class Badge extends Model
     'name'
 ];
 
-public function logements() {
-    return $this->belongsToMany(Logement::class);
+public function logements()
+{
+    return $this->belongsToMany(Logement::class, 'logement_badge');
 }
 }
