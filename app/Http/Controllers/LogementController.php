@@ -33,6 +33,7 @@ $logements = $logements->sortByDesc('score')->values();
      */
     public function create()
     {
+        $this->authorize('create',Logement::class);
         return view('logements.create');
     }
 
@@ -41,6 +42,7 @@ $logements = $logements->sortByDesc('score')->values();
      */
     public function store(StoreLogementRequest $request)
     {
+          $this->authorize('create', Logement::class);
         $logement = Logement::create($request->validated());
 
         if ($request->has('tags')) {
@@ -81,6 +83,7 @@ $logements = $logements->sortByDesc('score')->values();
      */
     public function edit(Logement $logement)
     {
+         $this->authorize('update', $logement);
         return view('logements.edit', compact('logement'));
     }
 
@@ -89,6 +92,7 @@ $logements = $logements->sortByDesc('score')->values();
      */
     public function update(UpdateLogementRequest $request, Logement $logement)
     {
+         $this->authorize('update', $logement);
         $logement->update($request->validated());
 
         if ($request->has('tags')) {
@@ -122,6 +126,7 @@ $logements = $logements->sortByDesc('score')->values();
      */
     public function destroy(Logement $logement)
     {
+         $this->authorize('delete', $logement);
         $logement->tags()->detach();
         $logement->badges()->detach();
 
