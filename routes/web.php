@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\LifeProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LogementController;
@@ -23,10 +24,10 @@ Route::resource('logements', LogementController::class)
     ->middleware('auth');
 
 Route::get('/register',[AuthController::class,'showRegister'])->name('register');
-Route::get('/favoris', function () {
-    return view('favoris');
-})->name('favoris');
-
+Route::middleware('auth')->group(function () {
+    Route::post('/favorites/{logementId}', [FavoriteController::class, 'store'])->name('favorites.store');
+    Route::delete('/favorites/{logementId}', [FavoriteController::class, 'destroy'])->name('favorites.destroy');
+});
 Route::get('/profile', function () {
     return view('profile');
 })->name('profile');
