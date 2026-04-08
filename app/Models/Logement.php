@@ -47,8 +47,8 @@ class Logement extends Model
         return $this->hasMany(Compatibility::class);
     }
 
-    public function favoritedBy()
-    {
-        return $this->belongsToMany(User::class, 'favorites');
-    }
+  public function favoritedBy()
+{
+    return $this->belongsToMany(User::class, 'favorites');
+}
 }

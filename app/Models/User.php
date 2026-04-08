@@ -46,5 +46,8 @@ class User extends Authenticatable
 {
     return $this->hasOne(LifeProfile::class);
 }
-
+public function favorites()
+{
+    return $this->belongsToMany(Logement::class, 'favorites');
+}
 }
