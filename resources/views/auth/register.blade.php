@@ -70,16 +70,19 @@
       <form action="{{ route('register.post') }}" method="POST" class="space-y-5">
         @csrf
 
+        {{-- Champ name caché – combiné automatiquement depuis prenom + nom --}}
+        <input type="hidden" name="name" id="name" value="{{ old('name', trim(old('prenom') . ' ' . old('nom'))) }}"/>
+
         {{-- Name row --}}
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="block text-sm font-semibold text-ink mb-1.5">Prénom</label>
-            <input type="text" name="prenom" value="{{ old('prenom') }}" placeholder="Hajar" required
+            <input type="text" id="prenom" name="prenom" value="{{ old('prenom') }}" placeholder="Hajar" required
                    class="w-full px-4 py-3 border border-border rounded-xl text-sm text-ink placeholder-muted outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition"/>
           </div>
           <div>
             <label class="block text-sm font-semibold text-ink mb-1.5">Nom</label>
-            <input type="text" name="nom" value="{{ old('nom') }}" placeholder="Dupont" required
+            <input type="text" id="nom" name="nom" value="{{ old('nom') }}" placeholder="Dupont" required
                    class="w-full px-4 py-3 border border-border rounded-xl text-sm text-ink placeholder-muted outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition"/>
           </div>
         </div>
@@ -117,14 +120,14 @@
           <label class="block text-sm font-semibold text-ink mb-2">Je suis</label>
           <div class="grid grid-cols-2 gap-3">
             <label class="flex items-center gap-3 border border-border rounded-xl px-4 py-3 cursor-pointer hover:border-primary transition has-[:checked]:border-primary has-[:checked]:bg-primary-light">
-              <input type="radio" name="role" value="locataire" {{ old('role', 'locataire') === 'locataire' ? 'checked' : '' }} class="accent-primary"/>
+              <input type="radio" name="role" value="user" {{ old('role', 'user') === 'user' ? 'checked' : '' }} class="accent-primary"/>
               <div>
                 <p class="text-sm font-semibold text-ink">Locataire</p>
                 <p class="text-xs text-muted">Je cherche un logement</p>
               </div>
             </label>
             <label class="flex items-center gap-3 border border-border rounded-xl px-4 py-3 cursor-pointer hover:border-primary transition has-[:checked]:border-primary has-[:checked]:bg-primary-light">
-              <input type="radio" name="role" value="proprietaire" {{ old('role') === 'proprietaire' ? 'checked' : '' }} class="accent-primary"/>
+              <input type="radio" name="role" value="owner" {{ old('role') === 'owner' ? 'checked' : '' }} class="accent-primary"/>
               <div>
                 <p class="text-sm font-semibold text-ink">Propriétaire</p>
                 <p class="text-xs text-muted">Je publie des annonces</p>
@@ -209,4 +212,22 @@
   </div>
 
 </div>
+
+<script>
+  (function () {
+    var prenom = document.getElementById('prenom');
+    var nom    = document.getElementById('nom');
+    var name   = document.getElementById('name');
+
+    function updateName() {
+      name.value = (prenom.value.trim() + ' ' + nom.value.trim()).trim();
+    }
+
+    prenom.addEventListener('input', updateName);
+    nom.addEventListener('input', updateName);
+
+    // Init on page load (handles old() values)
+    updateName();
+  })();
+</script>
 @endsection

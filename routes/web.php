@@ -10,9 +10,17 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-Route::resource('logements', LogementController::class);
+Route::resource('logements', LogementController::class)
+    ->middleware('auth');
 
 Route::get('/register',[AuthController::class,'showRegister'])->name('register');
+Route::get('/favoris', function () {
+    return view('favoris');
+})->name('favoris');
+
+Route::get('/profile', function () {
+    return view('profile');
+})->name('profile');
 
 
 Route::post('/register',[AuthController::class,'register'])->name('register.post');
