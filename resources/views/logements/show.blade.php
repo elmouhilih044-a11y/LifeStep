@@ -27,11 +27,9 @@
       {{-- Actions selon autorisation --}}
       <div class="flex items-center gap-2 shrink-0">
 
-        {{-- Favori : visible pour tout utilisateur connecté --}}
+        {{-- Favori : tout utilisateur connecté --}}
         @auth
-          @php
-            $isFav = Auth::user()->favorites->contains($logement->id);
-          @endphp
+          @php $isFav = Auth::user()->favorites->contains($logement->id); @endphp
           @if($isFav)
             <form action="{{ route('favorites.destroy', $logement->id) }}" method="POST">
               @csrf @method('DELETE')
@@ -59,7 +57,7 @@
           @endif
         @endauth
 
-        {{-- Modifier : visible si owner du logement OU admin --}}
+        {{-- Modifier : owner ou admin --}}
         @can('update', $logement)
           <a href="{{ route('logements.edit', $logement) }}"
              class="inline-flex items-center gap-2 border border-border text-ink text-sm font-semibold
@@ -71,7 +69,7 @@
           </a>
         @endcan
 
-        {{-- Supprimer : visible si owner OU admin --}}
+        {{-- Supprimer : owner ou admin --}}
         @can('delete', $logement)
           <form action="{{ route('logements.destroy', $logement) }}" method="POST"
                 onsubmit="return confirm('Supprimer définitivement ce logement ?')">
@@ -86,8 +84,8 @@
             </button>
           </form>
         @endcan
-      </div>
 
+      </div>
     </div>
   </div>
 
@@ -96,10 +94,10 @@
 
     @php
       $statusMap = [
-        'available' => ['label' => 'Disponible', 'text' => 'text-primary',    'bg' => 'bg-primary-light'],
-        'reserved'  => ['label' => 'Réservé',    'text' => 'text-amber-600',  'bg' => 'bg-amber-50'],
-        'rented'    => ['label' => 'Loué',       'text' => 'text-muted',      'bg' => 'bg-surface'],
-        'sold'      => ['label' => 'Vendu',      'text' => 'text-red-600',    'bg' => 'bg-red-50'],
+        'available' => ['label' => 'Disponible', 'text' => 'text-primary',   'bg' => 'bg-primary-light'],
+        'reserved'  => ['label' => 'Réservé',    'text' => 'text-amber-600', 'bg' => 'bg-amber-50'],
+        'rented'    => ['label' => 'Loué',       'text' => 'text-muted',     'bg' => 'bg-surface'],
+        'sold'      => ['label' => 'Vendu',      'text' => 'text-red-600',   'bg' => 'bg-red-50'],
       ];
       $s      = $statusMap[$logement->status] ?? ['label' => ucfirst($logement->status), 'text' => 'text-muted', 'bg' => 'bg-surface'];
       $photos = $logement->pictures->sortBy('order');
@@ -110,18 +108,17 @@
          TITRE + STATUT
     ══════════════════════════════════ --}}
     <div class="mb-8">
-      <span class="inline-flex items-center text-xs font-bold px-3 py-1 rounded-full mb-3 {{ $s['bg'] }} {{ $s['text'] }}">
-        {{ $s['label'] }}
-      </span>
-
-      {{-- Score de compatibilité si dispo --}}
-      @if(isset($logement->score))
-        <span class="inline-flex items-center gap-1 text-xs font-bold px-3 py-1 rounded-full bg-surface text-ink ml-2">
-          ⚡ {{ $logement->label ?? $logement->score . '% compatible' }}
+      <div class="flex flex-wrap items-center gap-2 mb-3">
+        <span class="inline-flex items-center text-xs font-bold px-3 py-1 rounded-full {{ $s['bg'] }} {{ $s['text'] }}">
+          {{ $s['label'] }}
         </span>
-      @endif
-
-      <h1 class="text-3xl md:text-4xl font-bold text-ink leading-tight mt-3 mb-2">
+        @if(isset($logement->score))
+          <span class="inline-flex items-center gap-1 text-xs font-bold px-3 py-1 rounded-full bg-surface text-ink">
+            ⚡ {{ $logement->label ?? $logement->score . '% compatible' }}
+          </span>
+        @endif
+      </div>
+      <h1 class="text-3xl md:text-4xl font-bold text-ink leading-tight mb-2">
         {{ $logement->title }}
       </h1>
       <p class="flex items-center gap-1.5 text-muted text-sm">
@@ -204,12 +201,11 @@
         <div class="border border-border rounded-2xl p-6 bg-white shadow-card">
           <p class="text-xs font-bold text-muted uppercase tracking-widest mb-5">Caractéristiques</p>
           <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-
             @php
               $items = [
-                ['icon' => 'M2.25 12l8.954-8.955a1.5 1.5 0 012.092 0L22.25 12M4.5 9.75v10.125A1.125 1.125 0 005.625 21', 'label' => 'Type',       'val' => $logement->type],
-                ['icon' => 'M3.75 5.25h16.5M3.75 12h16.5M3.75 18.75h16.5',                                                  'label' => 'Chambres',   'val' => $logement->bedrooms . ' ch.'],
-                ['icon' => 'M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0',                                          'label' => 'Sdb',        'val' => $logement->bathrooms . ' sdb'],
+                ['icon' => 'M2.25 12l8.954-8.955a1.5 1.5 0 012.092 0L22.25 12M4.5 9.75v10.125A1.125 1.125 0 005.625 21', 'label' => 'Type',     'val' => $logement->type],
+                ['icon' => 'M3.75 5.25h16.5M3.75 12h16.5M3.75 18.75h16.5',                                                  'label' => 'Chambres', 'val' => $logement->bedrooms . ' ch.'],
+                ['icon' => 'M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0',                                          'label' => 'Sdb',      'val' => $logement->bathrooms . ' sdb'],
               ];
               if ($logement->surface)
                 $items[] = ['icon' => 'M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15', 'label' => 'Surface', 'val' => $logement->surface . ' m²'];
@@ -264,7 +260,7 @@
       </div>
 
 
-      {{-- ── Colonne droite (sidebar) ── --}}
+      {{-- ── Sidebar droite ── --}}
       <div class="space-y-4">
 
         {{-- Prix --}}
@@ -318,7 +314,7 @@
           {{ $logement->phone }}
         </a>
 
-        {{-- Modifier (sidebar) — owner ou admin --}}
+        {{-- Modifier sidebar --}}
         @can('update', $logement)
           <a href="{{ route('logements.edit', $logement) }}"
              class="flex items-center justify-center gap-2 w-full border border-border text-ink font-semibold text-sm
@@ -377,7 +373,7 @@
 
 @endsection
 
-@push('scripts')
+@section('scripts')
 <script>
   const photos = @json($photos->values()->map(fn($p) => asset('storage/' . $p->path)));
   let current = 0;
@@ -398,7 +394,10 @@
     lb.classList.add('hidden'); lb.style.display = ''; document.body.style.overflow = '';
   }
 
-  function changePhoto(d) { current = (current + d + photos.length) % photos.length; updateLightbox(); }
+  function changePhoto(d) {
+    current = (current + d + photos.length) % photos.length;
+    updateLightbox();
+  }
 
   function updateLightbox() {
     document.getElementById('lightbox-img').src = photos[current];
@@ -413,4 +412,4 @@
     if (e.key === 'Escape') { lb.classList.add('hidden'); lb.style.display = ''; document.body.style.overflow = ''; }
   });
 </script>
-@endpush
+@endsection
