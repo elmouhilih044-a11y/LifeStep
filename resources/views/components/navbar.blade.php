@@ -42,10 +42,9 @@
         </a>
       </div>
 
-      <a href="{{ route('logements.index') }}"
-         class="hidden md:block text-sm font-semibold text-ink hover:bg-surface px-4 py-2.5 rounded-full transition whitespace-nowrap">
-        Publier un logement
-      </a>
+    @can('create', App\Models\Logement::class)
+    <a href="{{ route('logements.create') }}">Publier un logement</a>
+@endcan
 
       <button class="p-2.5 rounded-full hover:bg-surface transition">
         <svg class="w-5 h-5 text-ink" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">

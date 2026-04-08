@@ -100,7 +100,7 @@
                              focus:outline-none focus:border-primary appearance-none transition
                              @error('type') border-red-400 bg-red-50 @else border-border @enderror">
                 <option value="">Sélectionner…</option>
-                @foreach(['Appartement','Studio','Villa','Duplex','Maison','Bureau','Riad'] as $t)
+                @foreach(['Appartement','Studio','Villa','Maison'] as $t)
                   <option value="{{ $t }}" {{ old('type') === $t ? 'selected' : '' }}>{{ $t }}</option>
                 @endforeach
               </select>
