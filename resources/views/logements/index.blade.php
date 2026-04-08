@@ -15,13 +15,15 @@
       </div>
       <div class="flex items-center gap-3">
         <span class="text-muted text-sm">{{ $logements->count() }} résultat{{ $logements->count() > 1 ? 's' : '' }}</span>
-        <a href="{{ route('logements.create') }}"
-           class="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white font-semibold px-5 py-2.5 rounded-xl transition">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
-          </svg>
-          Publier un logement
-        </a>
+        @can('create', App\Models\Logement::class)
+<a href="{{ route('logements.create') }}"
+   class="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white font-semibold px-5 py-2.5 rounded-xl transition">
+  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+  </svg>
+  Publier un logement
+</a>
+@endcan
       </div>
     </div>
   </div>
