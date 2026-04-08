@@ -6,6 +6,7 @@ class CompatibilityService
 {
     public function budgetScore($lifeProfile, $logement)
     {
+        
         $price = $logement->price;
         $min = $lifeProfile->budget_min;
         $max = $lifeProfile->budget_max;
@@ -78,6 +79,13 @@ class CompatibilityService
         }
  
         public function calculate($lifeProfile,$logement){
+        
+    if (!$lifeProfile) {
+        return [
+            'score' => 0,
+            'label' => 'No profile'
+        ];
+    }
             $score=0;
             $score+=$this->budgetScore($lifeProfile, $logement);
               $score += $this->cityScore($lifeProfile, $logement);
