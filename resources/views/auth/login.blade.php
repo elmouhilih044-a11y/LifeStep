@@ -47,7 +47,14 @@
         </p>
       </div>
 
-      <form action="#" method="POST" class="space-y-5">
+      {{-- Erreur globale (email ou mot de passe incorrect) --}}
+      @if ($errors->has('error'))
+        <div class="mb-5 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm">
+          {{ $errors->first('error') }}
+        </div>
+      @endif
+
+      <form action="{{ route('login.post') }}" method="POST" class="space-y-5">
         @csrf
 
         {{-- Email --}}
@@ -59,7 +66,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25H4.5a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5H4.5a2.25 2.25 0 00-2.25 2.25m19.5 0l-9.75 6.75L2.25 6.75"/>
               </svg>
             </span>
-            <input type="email" name="email" placeholder="vous@exemple.com" required
+            <input type="email" name="email" value="{{ old('email') }}" placeholder="vous@exemple.com" required
                    class="w-full pl-11 pr-4 py-3 border border-border rounded-xl text-sm text-ink placeholder-muted outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition"/>
           </div>
         </div>

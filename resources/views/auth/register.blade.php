@@ -58,19 +58,28 @@
         </p>
       </div>
 
-      <form action="#" method="POST" class="space-y-5">
+      {{-- Erreurs de validation --}}
+      @if ($errors->any())
+        <div class="mb-5 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm space-y-1">
+          @foreach ($errors->all() as $error)
+            <p>{{ $error }}</p>
+          @endforeach
+        </div>
+      @endif
+
+      <form action="{{ route('register.post') }}" method="POST" class="space-y-5">
         @csrf
 
         {{-- Name row --}}
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="block text-sm font-semibold text-ink mb-1.5">Prénom</label>
-            <input type="text" name="prenom" placeholder="Hajar" required
+            <input type="text" name="prenom" value="{{ old('prenom') }}" placeholder="Hajar" required
                    class="w-full px-4 py-3 border border-border rounded-xl text-sm text-ink placeholder-muted outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition"/>
           </div>
           <div>
             <label class="block text-sm font-semibold text-ink mb-1.5">Nom</label>
-            <input type="text" name="nom" placeholder="Dupont" required
+            <input type="text" name="nom" value="{{ old('nom') }}" placeholder="Dupont" required
                    class="w-full px-4 py-3 border border-border rounded-xl text-sm text-ink placeholder-muted outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition"/>
           </div>
         </div>
@@ -84,7 +93,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25H4.5a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5H4.5a2.25 2.25 0 00-2.25 2.25m19.5 0l-9.75 6.75L2.25 6.75"/>
               </svg>
             </span>
-            <input type="email" name="email" placeholder="vous@exemple.com" required
+            <input type="email" name="email" value="{{ old('email') }}" placeholder="vous@exemple.com" required
                    class="w-full pl-11 pr-4 py-3 border border-border rounded-xl text-sm text-ink placeholder-muted outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition"/>
           </div>
         </div>
@@ -98,7 +107,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/>
               </svg>
             </span>
-            <input type="tel" name="telephone" placeholder="+212 6 00 00 00 00"
+            <input type="tel" name="telephone" value="{{ old('telephone') }}" placeholder="+212 6 00 00 00 00"
                    class="w-full pl-11 pr-4 py-3 border border-border rounded-xl text-sm text-ink placeholder-muted outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition"/>
           </div>
         </div>
@@ -108,14 +117,14 @@
           <label class="block text-sm font-semibold text-ink mb-2">Je suis</label>
           <div class="grid grid-cols-2 gap-3">
             <label class="flex items-center gap-3 border border-border rounded-xl px-4 py-3 cursor-pointer hover:border-primary transition has-[:checked]:border-primary has-[:checked]:bg-primary-light">
-              <input type="radio" name="role" value="locataire" checked class="accent-primary"/>
+              <input type="radio" name="role" value="locataire" {{ old('role', 'locataire') === 'locataire' ? 'checked' : '' }} class="accent-primary"/>
               <div>
                 <p class="text-sm font-semibold text-ink">Locataire</p>
                 <p class="text-xs text-muted">Je cherche un logement</p>
               </div>
             </label>
             <label class="flex items-center gap-3 border border-border rounded-xl px-4 py-3 cursor-pointer hover:border-primary transition has-[:checked]:border-primary has-[:checked]:bg-primary-light">
-              <input type="radio" name="role" value="proprietaire" class="accent-primary"/>
+              <input type="radio" name="role" value="proprietaire" {{ old('role') === 'proprietaire' ? 'checked' : '' }} class="accent-primary"/>
               <div>
                 <p class="text-sm font-semibold text-ink">Propriétaire</p>
                 <p class="text-xs text-muted">Je publie des annonces</p>
