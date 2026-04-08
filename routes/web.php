@@ -25,6 +25,7 @@ Route::resource('logements', LogementController::class)
 
 Route::get('/register',[AuthController::class,'showRegister'])->name('register');
 Route::middleware('auth')->group(function () {
+     Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
     Route::post('/favorites/{logementId}', [FavoriteController::class, 'store'])->name('favorites.store');
     Route::delete('/favorites/{logementId}', [FavoriteController::class, 'destroy'])->name('favorites.destroy');
 });
