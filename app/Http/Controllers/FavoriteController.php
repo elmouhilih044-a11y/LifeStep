@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Favorite;
 
 class FavoriteController extends Controller
 {
@@ -11,54 +13,33 @@ class FavoriteController extends Controller
      */
     public function index()
     {
-        //
+        $user=Auth::user();
+        $favorites=$user->favorites;
+        return view('favorites.index',compact('favorites'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
+  
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store($logementId)
     {
-        //
+        $user=Auth::user();
+        $user->favorites()->syncWithoutDetaching([$logementId]);
+        return back()->with('success', 'Ajouté aux favoris');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
+ 
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+ 
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($logementId)
     {
-        //
+        $user=Auth::user();
+       $user->favorites()->detach($logementId);
+        return back()->with('success', 'Supprimé des favoris');
     }
 }
