@@ -106,9 +106,9 @@
                 </div>
             </div>
 
-            {{-- Validation --}}
+           {{-- Validation --}}
             <div class="pt-4">
-                <button type="submit" class="w-full py-5 bg-ink hover:bg-black text-white rounded-2xl font-bold text-lg shadow-xl transition-all transform hover:-translate-y-1">
+                <button type="submit" class="w-full py-5 bg-primary hover:bg-primary-dark text-white rounded-2xl font-bold text-lg shadow-xl transition-all transform hover:-translate-y-1">
                     Enregistrer mon profil
                 </button>
             </div>
