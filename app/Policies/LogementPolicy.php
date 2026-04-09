@@ -13,7 +13,7 @@ class LogementPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,7 +21,7 @@ class LogementPolicy
      */
     public function view(User $user, Logement $logement): bool
     {
-        return false;
+        return true;
     }
 
     /**
