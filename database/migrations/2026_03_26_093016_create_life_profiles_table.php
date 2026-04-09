@@ -21,7 +21,7 @@ $table->decimal('budget_max', 10, 2)->nullable();
 
 $table->string('location')->nullable();
 
-$table->string('search_type'); 
+
 
 $table->foreignId('user_id')->unique()->constrained()->onDelete('cascade');
 
