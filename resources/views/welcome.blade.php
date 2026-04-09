@@ -24,157 +24,95 @@
 
 @section('content')
 
-{{-- ── Hero ── --}}
+{{-- ── Hero Section ── --}}
 <section class="hero-bg min-h-screen flex flex-col items-center justify-center text-center px-6 pt-20 relative">
-  <div class="max-w-3xl mx-auto">
-    <h1 class="fade-up-2 text-5xl md:text-6xl font-bold text-white leading-[1.1] tracking-tight mt-2">
-      Trouvez le logement<br/>
-      <span class="text-primary" style="text-shadow:0 2px 24px rgba(255,56,92,0.5)">fait pour vous</span>
+  <div class="relative z-10 max-w-3xl mx-auto">
+    
+    <h1 class="text-4xl md:text-6xl font-extrabold text-white leading-tight fade-up-1">
+      Trouvez le logement qui <br/>
+      <span class="text-primary">correspond à votre vie.</span>
     </h1>
-    <p class="fade-up-3 text-white/70 mt-5 text-lg max-w-xl mx-auto leading-relaxed">
-      Des milliers de biens disponibles partout en France. Louez simplement, vivez librement.
+    
+    <p class="mt-6 text-lg md:text-xl text-white/90 font-medium max-w-2xl mx-auto fade-up-2">
+      LifeStep+ analyse votre profil pour calculer la compatibilité avec chaque annonce. 
+      Simplifiez votre recherche immobilière dès aujourd'hui.
     </p>
 
-    {{-- Search --}}
-    <form action="{{ route('logements.index') }}" method="GET"
-          class="fade-up-3 mt-10 flex flex-col sm:flex-row items-stretch gap-3 bg-white rounded-2xl p-2 shadow-card-hover max-w-xl mx-auto">
-      <div class="flex items-center gap-2 flex-1 px-4">
-        <svg class="w-5 h-5 text-muted shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z"/>
-          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 19.5l-4.35-4.35"/>
-        </svg>
-        <input name="q" type="text" placeholder="Ville, quartier, type de bien…"
-               class="w-full text-sm text-ink placeholder-muted outline-none py-2 bg-transparent"/>
+    {{-- Groupe de Boutons Login & Register --}}
+    <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 fade-up-3">
+      @auth
+        {{-- Si l'utilisateur est déjà connecté --}}
+        <a href="{{ route('logements.index') }}" 
+           class="bg-primary hover:bg-primary-dark text-white font-bold px-10 py-4 rounded-2xl shadow-lg transition-all transform hover:-translate-y-1 w-full sm:w-auto">
+          Explorer les logements
+        </a>
+      @else
+        {{-- Bouton Connexion (Blanc) --}}
+        <a href="{{ route('login') }}" 
+           class="bg-white hover:bg-surface text-ink font-bold px-10 py-4 rounded-2xl shadow-lg transition-all transform hover:-translate-y-1 w-full sm:w-auto">
+          Se connecter
+        </a>
+
+        {{-- Bouton Inscription (Rouge Primary) --}}
+        <a href="{{ route('register') }}" 
+           class="bg-primary hover:bg-primary-dark text-white font-bold px-10 py-4 rounded-2xl shadow-lg transition-all transform hover:-translate-y-1 w-full sm:w-auto">
+          Créer un compte
+        </a>
+      @endauth
+    </div>
+  </div>
+
+  {{-- Barre de Statistiques --}}
+  <div class="absolute bottom-0 left-0 w-full bg-white/10 backdrop-blur-md border-t border-white/20 py-6 hidden md:block">
+    <div class="max-w-6xl mx-auto flex justify-around text-white">
+      <div>
+        <p class="text-2xl font-bold">{{ $stats['total'] }}</p>
+        <p class="text-xs uppercase tracking-widest text-white/60">Annonces</p>
       </div>
-      <button type="submit"
-              class="bg-primary hover:bg-primary-dark text-white font-semibold text-sm px-6 py-3 rounded-xl transition shrink-0">
-        Rechercher
-      </button>
-    </form>
-
-    <p class="fade-up-3 text-white/40 text-xs mt-4">Casablanca · Settat · Youssoufia…</p>
-  </div>
-
-  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/40 animate-bounce">
-    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
-    </svg>
-  </div>
-</section>
-
-{{-- ── Stats ── --}}
-<section class="bg-white border-b border-border">
-  <div class="max-w-5xl mx-auto px-6 py-14 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-    <div>
-      <p class="text-4xl font-bold text-ink">{{ $stats['total'] }}</p>
-      <p class="text-muted text-sm mt-1">Annonces publiées</p>
-    </div>
-    <div>
-      <p class="text-4xl font-bold text-ink">{{ $stats['dispo'] }}</p>
-      <p class="text-muted text-sm mt-1">Disponibles</p>
-    </div>
-    <div>
-      <p class="text-4xl font-bold text-ink">{{ $stats['villes'] }}</p>
-      <p class="text-muted text-sm mt-1">Villes couvertes</p>
-    </div>
-    <div>
-      <p class="text-4xl font-bold text-ink">{{ $stats['prix'] ?? '–' }}</p>
-      <p class="text-muted text-sm mt-1">Prix moyen / mois</p>
-    </div>
-  </div>
-</section>
-
-{{-- ── How it works ── --}}
-<section class="bg-surface py-20 px-6">
-  <div class="max-w-5xl mx-auto">
-    <p class="text-primary text-xs font-bold tracking-widest uppercase text-center mb-3">Comment ça marche</p>
-    <h2 class="text-3xl font-bold text-center text-ink mb-12">Simple. Rapide. Efficace.</h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-      @foreach([
-        ['step'=>'01','title'=>'Recherchez','desc'=>'Parcourez les annonces et filtrez selon vos critères : ville, prix, chambres.','icon'=>'M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z'],
-        ['step'=>'02','title'=>'Découvrez','desc'=>'Consultez les photos, les détails et la disponibilité de chaque bien.','icon'=>'M2.25 12l8.954-8.955a1.5 1.5 0 012.092 0L22.25 12M4.5 9.75v10.125A1.125 1.125 0 005.625 21h4.5a1.125 1.125 0 001.125-1.125V15a1.125 1.125 0 011.125-1.125h2.25A1.125 1.125 0 0115.75 15v4.875A1.125 1.125 0 0016.875 21h4.5a1.125 1.125 0 001.125-1.125V9.75'],
-        ['step'=>'03','title'=>'Louez','desc'=>'Contactez le propriétaire et finalisez votre location en toute sérénité.','icon'=>'M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z'],
-      ] as $item)
-      <div class="bg-white rounded-2xl p-8 shadow-card hover:shadow-card-hover transition-shadow group">
-        <div class="w-14 h-14 bg-primary-light rounded-2xl flex items-center justify-center mb-5 group-hover:bg-primary transition-colors">
-          <svg class="w-7 h-7 text-primary group-hover:text-white transition-colors" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="{{ $item['icon'] }}"/>
-          </svg>
-        </div>
-        <span class="text-xs font-bold text-primary tracking-widest uppercase">Étape {{ $item['step'] }}</span>
-        <h3 class="font-bold text-lg mt-2 mb-2">{{ $item['title'] }}</h3>
-        <p class="text-muted text-sm leading-relaxed">{{ $item['desc'] }}</p>
+      <div class="w-px h-10 bg-white/20"></div>
+      <div>
+        <p class="text-2xl font-bold">{{ $stats['villes'] }}</p>
+        <p class="text-xs uppercase tracking-widest text-white/60">Villes</p>
       </div>
-      @endforeach
-
+      <div class="w-px h-10 bg-white/20"></div>
+      <div>
+        <p class="text-2xl font-bold">{{ $stats['prix'] }}€</p>
+        <p class="text-xs uppercase tracking-widest text-white/60">Prix Moyen</p>
+      </div>
     </div>
   </div>
 </section>
 
-{{-- ── Recent Listings ── --}}
-<section class="max-w-7xl mx-auto px-6 py-20">
-  <div class="flex items-end justify-between mb-8">
+{{-- ── Dernières Annonces ── --}}
+<section class="py-20 px-6 max-w-7xl mx-auto">
+  <div class="flex items-end justify-between mb-12">
     <div>
-      <p class="text-primary text-xs font-bold tracking-widest uppercase mb-2">Nouveautés</p>
-      <h2 class="text-3xl font-bold text-ink">Derniers logements ajoutés</h2>
+      <h2 class="text-3xl font-bold text-ink">Nouveautés</h2>
+      <p class="text-muted mt-2">Les derniers logements publiés sur la plateforme.</p>
     </div>
-    <a href="{{ route('logements.index') }}" class="hidden sm:flex items-center gap-1 text-sm font-semibold text-primary hover:text-primary-dark transition">
+    <a href="{{ route('logements.index') }}" class="text-primary font-bold hover:underline flex items-center gap-1">
       Voir tout
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
-      </svg>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
     </a>
   </div>
 
   @if($recent->isEmpty())
-    <div class="flex flex-col items-center justify-center py-20 text-center">
-      <div class="w-20 h-20 bg-primary-light rounded-full flex items-center justify-center mb-5">
-        <svg class="w-9 h-9 text-primary" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955a1.5 1.5 0 012.092 0L22.25 12M4.5 9.75v10.125A1.125 1.125 0 005.625 21h4.5a1.125 1.125 0 001.125-1.125V15a1.125 1.125 0 011.125-1.125h2.25A1.125 1.125 0 0115.75 15v4.875A1.125 1.125 0 0016.875 21h4.5a1.125 1.125 0 001.125-1.125V9.75"/>
-        </svg>
-      </div>
-      <p class="text-ink font-semibold text-lg">Aucun logement pour l'instant</p>
-      <p class="text-muted text-sm mt-1">Soyez le premier à publier une annonce.</p>
-      <a href="{{ route('logements.index') }}" class="mt-6 inline-flex items-center gap-2 bg-primary hover:bg-primary-dark text-white font-semibold px-6 py-3 rounded-xl transition">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
-        </svg>
-        Publier un logement
-      </a>
+    <div class="bg-surface rounded-3xl p-12 text-center border-2 border-dashed border-border">
+      <p class="text-muted italic">Aucun logement récent pour le moment.</p>
     </div>
   @else
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
       @foreach($recent as $logement)
-        <a href="{{ route('logements.index') }}" class="group block rounded-2xl overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-300">
-          <div class="relative overflow-hidden">
-            @if(!empty($logement['photo']))
-              <img src="{{ $logement['photo'] }}" alt="{{ $logement['titre'] }}"
-                   class="w-full h-52 object-cover group-hover:scale-105 transition-transform duration-500"/>
-            @else
-              <div class="w-full h-52 bg-surface flex items-center justify-center">
-                <svg class="w-12 h-12 text-border" fill="none" stroke="currentColor" stroke-width="1.2" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955a1.5 1.5 0 012.092 0L22.25 12M4.5 9.75v10.125A1.125 1.125 0 005.625 21h4.5a1.125 1.125 0 001.125-1.125V15a1.125 1.125 0 011.125-1.125h2.25A1.125 1.125 0 0115.75 15v4.875A1.125 1.125 0 0016.875 21h4.5a1.125 1.125 0 001.125-1.125V9.75"/>
-                </svg>
-              </div>
-            @endif
-            <span class="absolute top-3 left-3 bg-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm {{ $logement['disponible'] ? 'text-primary' : 'text-muted' }}">
-              {{ $logement['disponible'] ? 'Disponible' : 'Indisponible' }}
-            </span>
+        <a href="{{ route('logements.show', $logement['id']) }}" class="group">
+          <div class="relative aspect-square rounded-2xl overflow-hidden mb-4 shadow-sm group-hover:shadow-card transition-all">
+            <img src="{{ $logement['image'] }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
           </div>
-          <div class="p-5 bg-white">
-            <div class="flex items-start justify-between gap-2">
-              <p class="font-semibold text-ink truncate">{{ $logement['titre'] }}</p>
-              <p class="text-primary font-bold shrink-0">{{ $logement['prix'] }} €<span class="text-muted font-normal text-xs">/mois</span></p>
+          <div class="space-y-1">
+            <div class="flex justify-between items-start">
+              <h3 class="font-bold text-ink truncate">{{ $logement['title'] }}</h3>
+              <span class="text-primary font-bold">{{ $logement['price'] }}€</span>
             </div>
-            <p class="text-muted text-sm mt-1">{{ $logement['ville'] }}</p>
-            <div class="flex items-center gap-3 mt-3 text-xs text-muted border-t border-border pt-3">
-              <span>{{ $logement['chambres'] }} ch.</span>
-              <span class="text-border">·</span>
-              <span>{{ $logement['lits'] }} lits</span>
-              <span class="text-border">·</span>
-              <span>{{ $logement['bains'] }} sdb</span>
-            </div>
+            <p class="text-muted text-sm">{{ $logement['city'] }}</p>
           </div>
         </a>
       @endforeach
@@ -189,12 +127,9 @@
     <p class="text-primary text-xs font-bold tracking-widest uppercase mb-3">Propriétaires</p>
     <h2 class="text-3xl md:text-4xl font-bold text-white leading-tight">Vous avez un bien à louer ?</h2>
     <p class="mt-3 text-white/60 text-base">Rejoignez LifeStep+ et publiez votre annonce gratuitement en moins de 2 minutes.</p>
-    <a href="{{ route('logements.index') }}"
+    <a href="{{ route('logements.create') }}"
        class="inline-flex items-center gap-2 mt-8 bg-primary hover:bg-primary-dark text-white font-semibold px-8 py-4 rounded-xl text-base shadow-lg hover:shadow-xl transition-all">
-      Commencer maintenant
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
-      </svg>
+      Publier mon annonce
     </a>
   </div>
 </section>
