@@ -71,12 +71,17 @@ $logements = $logements->sortByDesc('score')->values();
     /**
      * Display the specified resource.
      */
-    public function show(Logement $logement)
-    {
-        $logement->load('tags', 'badges', 'pictures');
+  public function show(Logement $logement, CompatibilityService $compatibilityService)
+{
+    $logement->load('tags', 'badges', 'pictures');
 
-        return view('logements.show', compact('logement'));
-    }
+    $profile = Auth::user()?->lifeProfile;
+    $result = $compatibilityService->calculate($profile, $logement);
+    $logement->score = $result['score'];
+    $logement->label = $result['label'];
+
+    return view('logements.show', compact('logement'));
+}
 
     /**
      * Show the form for editing the specified resource.
