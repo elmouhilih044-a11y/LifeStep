@@ -12,7 +12,7 @@ class StoreLifeProfileRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -31,24 +31,5 @@ class StoreLifeProfileRequest extends FormRequest
         ];
     }
 
-     public function messages(): array
-    {
-        return [
-            'profile_type.required' => 'Le type de profil est obligatoire.',
-            'profile_type.in' => 'Le type de profil sélectionné est invalide.',
-
-            'budget_min.numeric' => 'Le budget minimum doit être un nombre.',
-            'budget_min.min' => 'Le budget minimum doit être supérieur ou égal à 0.',
-
-            'budget_max.numeric' => 'Le budget maximum doit être un nombre.',
-            'budget_max.min' => 'Le budget maximum doit être supérieur ou égal à 0.',
-            'budget_max.gte' => 'Le budget maximum doit être supérieur ou égal au budget minimum.',
-
-            'location.string' => 'La localisation doit être une chaîne de caractères.',
-            'location.max' => 'La localisation ne doit pas dépasser 255 caractères.',
-
-            'search_type.required' => 'Le type de recherche est obligatoire.',
-            'search_type.in' => 'Le type de recherche doit être location ou achat.',
-        ];
-    }
+   
 }
