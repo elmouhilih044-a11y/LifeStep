@@ -28,8 +28,8 @@
       </div>
 
       {{-- Dropdown Profil --}}
-      <div class="relative" x-data="{ open: false }"> {{-- Utilisation d'Alpine.js pour le clic --}}
-        <button @click="open = !open" @click.away="open = false" class="flex items-center gap-3 border border-border rounded-full pl-3 pr-1.5 py-1.5 hover:shadow-md transition bg-white">
+      <div class="relative" id="nav-profile-wrapper">
+        <button id="nav-profile-btn" onclick="toggleNavMenu()" class="flex items-center gap-3 border border-border rounded-full pl-3 pr-1.5 py-1.5 hover:shadow-md transition bg-white">
           <svg class="w-5 h-5 text-ink" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
           <div class="w-8 h-8 bg-muted rounded-full flex items-center justify-center overflow-hidden">
             @auth
@@ -41,11 +41,8 @@
         </button>
 
         {{-- Menu déroulant --}}
-        <div x-show="open" 
-             x-transition:enter="transition ease-out duration-100"
-             x-transition:enter-start="transform opacity-0 scale-95"
-             x-transition:leave="transition ease-in duration-75"
-             class="absolute right-0 mt-3 w-64 bg-white rounded-2xl border border-border shadow-xl py-2 z-50">
+        <div id="nav-profile-menu"
+             class="hidden absolute right-0 mt-3 w-64 bg-white rounded-2xl border border-border shadow-xl py-2 z-50">
           
           @auth
             <div class="px-6 py-3 border-b border-border">
@@ -80,3 +77,18 @@
     </div>
   </div>
 </nav>
+
+<script>
+  function toggleNavMenu() {
+    var menu = document.getElementById('nav-profile-menu');
+    menu.classList.toggle('hidden');
+  }
+
+  document.addEventListener('click', function(e) {
+    var wrapper = document.getElementById('nav-profile-wrapper');
+    var menu    = document.getElementById('nav-profile-menu');
+    if (wrapper && menu && !wrapper.contains(e.target)) {
+      menu.classList.add('hidden');
+    }
+  });
+</script>
