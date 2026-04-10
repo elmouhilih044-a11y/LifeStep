@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\LifeProfileController;
@@ -61,8 +62,6 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware(['auth','admin'])->prefix('admin')->group(function(){
-Route::get('/',function(){
-return "Admin Dashboard";
-})->name('admin.dashboard');
+    Route::get('/', [AdminController::class, 'index'])->name('admin.dashboard');
 });
    
