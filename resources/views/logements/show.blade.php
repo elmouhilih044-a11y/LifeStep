@@ -112,19 +112,7 @@
         <span class="inline-flex items-center text-xs font-bold px-3 py-1 rounded-full {{ $s['bg'] }} {{ $s['text'] }}">
           {{ $s['label'] }}
         </span>
-  @if(isset($logement->score))
-          @php
-            $scoreColor = match(true) {
-              $logement->score >= 80 => ['bar' => 'bg-emerald-500', 'text' => 'text-emerald-600', 'bg' => 'bg-emerald-50', 'border' => 'border-emerald-200'],
-              $logement->score >= 60 => ['bar' => 'bg-primary',     'text' => 'text-primary',     'bg' => 'bg-primary-light', 'border' => 'border-primary/30'],
-              $logement->score >= 40 => ['bar' => 'bg-amber-400',   'text' => 'text-amber-600',   'bg' => 'bg-amber-50',   'border' => 'border-amber-200'],
-              default                => ['bar' => 'bg-muted',       'text' => 'text-muted',       'bg' => 'bg-surface',    'border' => 'border-border'],
-            };
-          @endphp
-          <span class="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full {{ $scoreColor['bg'] }} {{ $scoreColor['text'] }} border {{ $scoreColor['border'] }}">
-            ⚡ {{ $logement->label }}
-          </span>
-        @endif
+
       </div>
       <h1 class="text-3xl md:text-4xl font-bold text-ink leading-tight mb-2">
         {{ $logement->title }}
@@ -188,6 +176,173 @@
       @endif
     </div>
 
+
+    {{-- ══════════════════════════════════
+         SECTION COMPATIBILITÉ HERO
+    ══════════════════════════════════ --}}
+    @auth
+      @php
+        $profile = Auth::user()->lifeProfile;
+        $hasProfile = !is_null($profile);
+
+        if ($hasProfile && isset($logement->score)) {
+          $sc = match(true) {
+            $logement->score >= 80 => [
+              'gradient'   => 'from-emerald-500 to-teal-400',
+              'glow'       => 'rgba(16,185,129,0.35)',
+              'bar'        => 'bg-white/90',
+              'label_bg'   => 'bg-emerald-100',
+              'label_text' => 'text-emerald-700',
+              'icon_color' => '#10b981',
+              'emoji'      => '🏆',
+              'sub'        => 'Ce logement correspond parfaitement à votre profil de vie.',
+            ],
+            $logement->score >= 60 => [
+              'gradient'   => 'from-primary to-rose-400',
+              'glow'       => 'rgba(255,56,92,0.30)',
+              'bar'        => 'bg-white/90',
+              'label_bg'   => 'bg-primary-light',
+              'label_text' => 'text-primary',
+              'icon_color' => '#ff385c',
+              'emoji'      => '✅',
+              'sub'        => 'Ce logement correspond bien à vos critères de recherche.',
+            ],
+            $logement->score >= 40 => [
+              'gradient'   => 'from-amber-400 to-orange-400',
+              'glow'       => 'rgba(251,191,36,0.30)',
+              'bar'        => 'bg-white/90',
+              'label_bg'   => 'bg-amber-100',
+              'label_text' => 'text-amber-700',
+              'icon_color' => '#f59e0b',
+              'emoji'      => '⚡',
+              'sub'        => 'Ce logement correspond partiellement à votre profil.',
+            ],
+            default => [
+              'gradient'   => 'from-slate-400 to-slate-500',
+              'glow'       => 'rgba(100,116,139,0.20)',
+              'bar'        => 'bg-white/70',
+              'label_bg'   => 'bg-slate-100',
+              'label_text' => 'text-slate-600',
+              'icon_color' => '#64748b',
+              'emoji'      => '🔍',
+              'sub'        => 'Ce logement ne correspond pas encore à votre profil.',
+            ],
+          };
+
+          // Compute each criterion score
+          $budgetPts = 0;
+          if ($profile->budget_min && $profile->budget_max) {
+            if ($logement->price >= $profile->budget_min && $logement->price <= $profile->budget_max) $budgetPts = 40;
+            elseif ($logement->price <= $profile->budget_max * 1.1 && $logement->price >= $profile->budget_min * 0.9) $budgetPts = 20;
+          }
+          $cityPts = ($profile->location && $logement->city && strtolower($profile->location) === strtolower($logement->city)) ? 25 : 0;
+          $availPts = ($logement->status === 'available') ? 10 : 0;
+          $typePts  = $logement->score - $budgetPts - $cityPts - $availPts;
+
+          $criteria = [
+            ['label' => 'Budget',        'pts' => $budgetPts, 'max' => 40, 'icon' => 'M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75'],
+            ['label' => 'Ville',         'pts' => $cityPts,   'max' => 25, 'icon' => 'M15 10.5a3 3 0 11-6 0 3 3 0 016 0zM19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z'],
+            ['label' => 'Type de profil','pts' => $typePts,   'max' => 25, 'icon' => 'M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0'],
+            ['label' => 'Disponibilité', 'pts' => $availPts,  'max' => 10, 'icon' => 'M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z'],
+          ];
+        }
+      @endphp
+
+      @if($hasProfile && isset($logement->score))
+        <div class="mb-10 rounded-3xl overflow-hidden relative"
+             style="box-shadow: 0 8px 40px {{ $sc['glow'] }};">
+
+          {{-- Gradient background --}}
+          <div class="bg-gradient-to-br {{ $sc['gradient'] }} px-8 pt-8 pb-6 relative overflow-hidden">
+
+            {{-- Decorative circles --}}
+            <div class="absolute -top-10 -right-10 w-48 h-48 bg-white/10 rounded-full pointer-events-none"></div>
+            <div class="absolute -bottom-8 -left-8 w-32 h-32 bg-black/5 rounded-full pointer-events-none"></div>
+
+            <div class="relative z-10 flex flex-col md:flex-row md:items-center gap-6">
+
+              {{-- Donut score --}}
+              <div class="shrink-0 flex items-center justify-center">
+                <div class="relative w-28 h-28">
+                  <svg viewBox="0 0 100 100" class="w-28 h-28 -rotate-90">
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.20)" stroke-width="10"/>
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="white" stroke-width="10"
+                            stroke-linecap="round"
+                            stroke-dasharray="{{ round(251.2 * $logement->score / 100, 1) }} 251.2"
+                            style="filter: drop-shadow(0 0 6px rgba(255,255,255,0.5))"/>
+                  </svg>
+                  <div class="absolute inset-0 flex flex-col items-center justify-center">
+                    <span class="text-3xl font-black text-white leading-none">{{ $logement->score }}</span>
+                    <span class="text-white/70 text-xs font-bold">/ 100</span>
+                  </div>
+                </div>
+              </div>
+
+              {{-- Label + sub --}}
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="text-2xl">{{ $sc['emoji'] }}</span>
+                  <h3 class="text-2xl font-black text-white leading-tight">{{ $logement->label }}</h3>
+                </div>
+                <p class="text-white/75 text-sm leading-relaxed max-w-md">{{ $sc['sub'] }}</p>
+              </div>
+
+              {{-- Criteria pills --}}
+              <div class="shrink-0 grid grid-cols-2 gap-2">
+                @foreach($criteria as $c)
+                  <div class="bg-white/15 backdrop-blur-sm rounded-2xl px-3 py-2.5 text-center min-w-[90px]">
+                    <svg class="w-4 h-4 text-white/80 mx-auto mb-1" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="{{ $c['icon'] }}"/>
+                    </svg>
+                    <p class="text-[10px] text-white/60 font-semibold uppercase tracking-wide leading-tight">{{ $c['label'] }}</p>
+                    <p class="text-white font-black text-sm mt-0.5">+{{ $c['pts'] }}<span class="text-white/50 text-[10px] font-normal"> /{{ $c['max'] }}</span></p>
+                  </div>
+                @endforeach
+              </div>
+
+            </div>
+          </div>
+
+          {{-- Progress bar strip --}}
+          <div class="bg-white/20 h-1.5">
+            <div class="{{ $sc['bar'] }} h-1.5 transition-all duration-1000 ease-out"
+                 style="width: {{ $logement->score }}%"></div>
+          </div>
+
+          {{-- Bottom info row --}}
+          <div class="bg-white/10 backdrop-blur-sm px-8 py-3 flex items-center justify-between gap-4 flex-wrap">
+            <p class="text-white/70 text-xs font-medium">
+              Score calculé selon votre profil de vie LifeStep+
+            </p>
+            <a href="{{ route('life_profiles.edit') }}"
+               class="text-white text-xs font-bold hover:underline opacity-80 hover:opacity-100 transition-opacity">
+              Modifier mon profil →
+            </a>
+          </div>
+        </div>
+
+      @else
+        {{-- No profile CTA --}}
+        <div class="mb-10 rounded-3xl border-2 border-dashed border-primary/30 bg-primary-light px-8 py-8 flex flex-col sm:flex-row items-center gap-6">
+          <div class="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
+            <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/>
+            </svg>
+          </div>
+          <div class="flex-1 text-center sm:text-left">
+            <h3 class="font-black text-ink text-lg">Découvrez votre score de compatibilité</h3>
+            <p class="text-muted text-sm mt-1 max-w-md">Créez votre profil de vie pour voir à quel point ce logement vous correspond — budget, ville, type de logement et disponibilité.</p>
+          </div>
+          <a href="{{ route('life_profiles.create') }}"
+             class="shrink-0 inline-flex items-center gap-2 bg-primary hover:bg-primary-dark text-white font-bold px-6 py-3 rounded-xl transition-colors text-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+            </svg>
+            Créer mon profil
+          </a>
+        </div>
+      @endif
+    @endauth
 
     {{-- ══════════════════════════════════
          LAYOUT 2 COLONNES
@@ -294,74 +449,7 @@
           </p>
         </div>
 
-        {{-- Score de compatibilité --}}
-        @auth
-          @if(isset($logement->score))
-            @php
-              $scoreColor = match(true) {
-                $logement->score >= 80 => ['bar' => 'bg-emerald-500', 'text' => 'text-emerald-600', 'bg' => 'bg-emerald-50',  'border' => 'border-emerald-200'],
-                $logement->score >= 60 => ['bar' => 'bg-primary',     'text' => 'text-primary',     'bg' => 'bg-primary-light', 'border' => 'border-primary/30'],
-                $logement->score >= 40 => ['bar' => 'bg-amber-400',   'text' => 'text-amber-600',   'bg' => 'bg-amber-50',    'border' => 'border-amber-200'],
-                default                => ['bar' => 'bg-slate-300',   'text' => 'text-muted',       'bg' => 'bg-surface',     'border' => 'border-border'],
-              };
-            @endphp
-            <div class="border {{ $scoreColor['border'] }} rounded-2xl p-5 {{ $scoreColor['bg'] }} shadow-card">
-              <p class="text-xs font-bold text-muted uppercase tracking-widest mb-3">Compatibilité profil</p>
 
-              {{-- Score chiffre + label --}}
-              <div class="flex items-end justify-between mb-3">
-                <span class="text-4xl font-black {{ $scoreColor['text'] }} leading-none">
-                  {{ $logement->score }}<span class="text-lg font-semibold opacity-60">%</span>
-                </span>
-                <span class="text-xs font-bold {{ $scoreColor['text'] }} opacity-80">
-                  {{ $logement->label }}
-                </span>
-              </div>
-
-              {{-- Barre de progression --}}
-              <div class="w-full h-2 bg-white/60 rounded-full overflow-hidden">
-                <div class="{{ $scoreColor['bar'] }} h-2 rounded-full transition-all duration-700"
-                     style="width: {{ $logement->score }}%"></div>
-              </div>
-
-              {{-- Détail des critères --}}
-              <div class="mt-4 space-y-1.5 text-xs text-muted">
-                <div class="flex items-center justify-between">
-                  <span>Budget</span>
-                  <span class="font-semibold {{ $scoreColor['text'] }}">
-                    {{ Auth::user()->lifeProfile && $logement->price >= Auth::user()->lifeProfile->budget_min && $logement->price <= Auth::user()->lifeProfile->budget_max ? '+40 pts' : (Auth::user()->lifeProfile && $logement->price <= Auth::user()->lifeProfile->budget_max * 1.1 ? '+20 pts' : '0 pt') }}
-                  </span>
-                </div>
-                <div class="flex items-center justify-between">
-                  <span>Ville</span>
-                  <span class="font-semibold {{ $scoreColor['text'] }}">
-                    {{ Auth::user()->lifeProfile && strtolower(Auth::user()->lifeProfile->location) === strtolower($logement->city) ? '+25 pts' : '0 pt' }}
-                  </span>
-                </div>
-                <div class="flex items-center justify-between">
-                  <span>Type de profil</span>
-                  <span class="font-semibold {{ $scoreColor['text'] }}">
-                    {{ $logement->score - (Auth::user()->lifeProfile && $logement->price >= Auth::user()->lifeProfile->budget_min && $logement->price <= Auth::user()->lifeProfile->budget_max ? 40 : (Auth::user()->lifeProfile && $logement->price <= Auth::user()->lifeProfile->budget_max * 1.1 ? 20 : 0)) - (Auth::user()->lifeProfile && strtolower(Auth::user()->lifeProfile->location) === strtolower($logement->city) ? 25 : 0) - ($logement->status === 'available' ? 10 : 0) > 0 ? '+25 pts' : '0 pt' }}
-                  </span>
-                </div>
-                <div class="flex items-center justify-between">
-                  <span>Disponibilité</span>
-                  <span class="font-semibold {{ $scoreColor['text'] }}">
-                    {{ $logement->status === 'available' ? '+10 pts' : '0 pt' }}
-                  </span>
-                </div>
-              </div>
-
-              @if(!Auth::user()->lifeProfile)
-                <p class="text-xs text-muted mt-3 italic">
-                  <a href="{{ route('life_profiles.create') }}" class="text-primary font-semibold hover:underline">
-                    Créez votre profil de vie
-                  </a> pour voir votre score.
-                </p>
-              @endif
-            </div>
-          @endif
-        @endauth
 
         {{-- Propriétaire --}}
         @if($logement->user)
