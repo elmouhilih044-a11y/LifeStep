@@ -457,59 +457,53 @@
       </div>
 
 
-      {{-- ── Sidebar droite ── --}}
-      <div class="space-y-4">
+     {{-- ── Sidebar droite ── --}}
+<div class="space-y-4">
 
-        {{-- Prix --}}
-        <div class="bg-primary rounded-2xl p-6 text-white shadow-card">
-          <p class="text-[10px] font-black opacity-60 uppercase tracking-widest mb-2">Loyer mensuel</p>
-          <p class="text-5xl font-black tracking-tight leading-none">
-            {{ number_format($logement->price, 0, ',', ' ') }}
-          </p>
-          <p class="text-sm font-semibold opacity-70 mt-1">MAD / mois</p>
-          <div class="mt-5 pt-4 border-t border-white/20">
-            <p class="text-[11px] opacity-50">Charges selon contrat</p>
-          </div>
-        </div>
-
-        {{-- CTA Téléphone --}}
-        <a href="tel:{{ $logement->phone }}"
-           class="flex items-center justify-center gap-2.5 w-full bg-ink text-white font-bold text-sm
-                  py-4 rounded-2xl hover:opacity-90 transition-opacity">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/>
-          </svg>
-          {{ $logement->phone }}
-        </a>
-
-        {{-- Modifier sidebar --}}
-        @can('update', $logement)
-          <a href="{{ route('logements.edit', $logement) }}"
-             class="flex items-center justify-center gap-2 w-full border border-border text-ink font-semibold text-sm
-                    py-3 rounded-2xl hover:border-primary hover:text-primary transition-colors">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/>
-            </svg>
-            Modifier ce logement
-          </a>
-        @endcan
-
-      </div>
+  {{-- Prix --}}
+  <div class="bg-[#d1d5db] rounded-2xl p-6 text-gray-800 shadow-card">
+    <p class="text-[10px] font-black opacity-60 uppercase tracking-widest mb-2">Loyer mensuel</p>
+    <p class="text-5xl font-black tracking-tight leading-none">
+      {{ number_format($logement->price, 0, ',', ' ') }}
+    </p>
+    <p class="text-sm font-semibold opacity-70 mt-1">MAD / mois</p>
+    <div class="mt-5 pt-4 border-t border-white/20">
+      <p class="text-[11px] opacity-50">Charges selon contrat</p>
     </div>
-
-    {{-- Retour aux annonces — pleine largeur, dernier élément --}}
-    <div class="mt-7">
-      <a href="{{ route('logements.index') }}"
-         class="flex items-center justify-center gap-2 w-full border border-border text-muted font-semibold text-sm
-                py-4 rounded-2xl hover:border-ink hover:text-ink transition-colors bg-white shadow-card">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/>
-        </svg>
-        Retour aux annonces
-      </a>
-    </div>
-
   </div>
+
+  {{-- CTA Téléphone --}}
+  <a href="tel:{{ $logement->phone }}"
+     class="flex items-center justify-center gap-2.5 w-full bg-ink text-white font-bold text-sm
+            py-4 rounded-2xl hover:opacity-90 transition-opacity">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/>
+    </svg>
+    {{ $logement->phone }}
+  </a>
+
+  {{-- Retour aux annonces --}}
+  <a href="{{ route('logements.index') }}"
+     class="flex items-center justify-center gap-2 w-full border border-border text-muted font-semibold text-sm
+            py-4 rounded-2xl hover:border-ink hover:text-ink transition-colors bg-white shadow-card">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/>
+    </svg>
+    Retour aux annonces
+  </a>
+
+  {{-- Modifier sidebar --}}
+  @can('update', $logement)
+    <a href="{{ route('logements.edit', $logement) }}"
+       class="flex items-center justify-center gap-2 w-full border border-border text-ink font-semibold text-sm
+              py-3 rounded-2xl hover:border-primary hover:text-primary transition-colors">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/>
+      </svg>
+      Modifier ce logement
+    </a>
+  @endcan
+
 </div>
 
 {{-- ══════════════════════════════════
