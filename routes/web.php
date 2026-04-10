@@ -59,4 +59,10 @@ Route::middleware('auth')->group(function () {
     Route::put('/life-profile', [LifeProfileController::class, 'update'])
         ->name('life_profiles.update');
 });
+
+Route::middleware(['auth','admin'])->prefix('admin')->group(function(){
+Route::get('/',function(){
+return "Admin Dashboard";
+})->name('admin.dashboard');
+});
    
