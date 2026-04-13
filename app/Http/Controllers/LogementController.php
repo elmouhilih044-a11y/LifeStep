@@ -14,17 +14,28 @@ class LogementController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(CompatibilityService $compatibilityService)
+    public function index(CompatibilityService $compatibilityService, Request $request)
     {
-        $profile = Auth::user()->lifeProfile;
-        $logements = Logement::with('tags', 'badges', 'pictures')->where('status', 'available')->get();
+        $query = Logement::with('tags', 'badges', 'pictures')->where('status', 'available');
+        if ($request->filled('q')) {
+            $search = $request->q;
 
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('city', 'like', "%{$search}%")
+                    ->orWhere('address', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+        $logements = $query->latest()->get();
+
+        $profile = Auth::user()->lifeProfile;
         foreach ($logements as $logement) {
             $result = $compatibilityService->calculate($profile, $logement);
             $logement->score = $result['score'];
             $logement->label = $result['label'];
         }
-$logements = $logements->sortByDesc('score')->values();
+        $logements = $logements->sortByDesc('score')->values();
         return view('logements.index', compact('logements'));
     }
 
@@ -33,7 +44,7 @@ $logements = $logements->sortByDesc('score')->values();
      */
     public function create()
     {
-        $this->authorize('create',Logement::class);
+        $this->authorize('create', Logement::class);
         return view('logements.create');
     }
 
@@ -42,7 +53,7 @@ $logements = $logements->sortByDesc('score')->values();
      */
     public function store(StoreLogementRequest $request)
     {
-          $this->authorize('create', Logement::class);
+        $this->authorize('create', Logement::class);
         $logement = Logement::create($request->validated());
 
         if ($request->has('tags')) {
@@ -71,24 +82,24 @@ $logements = $logements->sortByDesc('score')->values();
     /**
      * Display the specified resource.
      */
-  public function show(Logement $logement, CompatibilityService $compatibilityService)
-{
-    $logement->load('tags', 'badges', 'pictures');
+    public function show(Logement $logement, CompatibilityService $compatibilityService)
+    {
+        $logement->load('tags', 'badges', 'pictures');
 
-    $profile = Auth::user()?->lifeProfile;
-    $result = $compatibilityService->calculate($profile, $logement);
-    $logement->score = $result['score'];
-    $logement->label = $result['label'];
+        $profile = Auth::user()?->lifeProfile;
+        $result = $compatibilityService->calculate($profile, $logement);
+        $logement->score = $result['score'];
+        $logement->label = $result['label'];
 
-    return view('logements.show', compact('logement'));
-}
+        return view('logements.show', compact('logement'));
+    }
 
     /**
      * Show the form for editing the specified resource.
      */
     public function edit(Logement $logement)
     {
-         $this->authorize('update', $logement);
+        $this->authorize('update', $logement);
         return view('logements.edit', compact('logement'));
     }
 
@@ -97,7 +108,7 @@ $logements = $logements->sortByDesc('score')->values();
      */
     public function update(UpdateLogementRequest $request, Logement $logement)
     {
-         $this->authorize('update', $logement);
+        $this->authorize('update', $logement);
         $logement->update($request->validated());
 
         if ($request->has('tags')) {
@@ -131,7 +142,7 @@ $logements = $logements->sortByDesc('score')->values();
      */
     public function destroy(Logement $logement)
     {
-         $this->authorize('delete', $logement);
+        $this->authorize('delete', $logement);
         $logement->tags()->detach();
         $logement->badges()->detach();
 
