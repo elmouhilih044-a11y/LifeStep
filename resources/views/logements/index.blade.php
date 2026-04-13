@@ -11,7 +11,10 @@
     <div class="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
         <h1 class="text-4xl font-bold text-ink">Logements disponibles</h1>
-        <p class="text-muted mt-1">Trouvez le bien adapté à votre profil de vie</p>
+        @if(!Auth::user()?->is_admin)
+       <p class="text-muted mt-1">Trouvez le bien adapté à votre profil de vie</p>
+@endif
+     
       </div>
       <div class="flex items-center gap-3">
         <span class="text-muted text-sm">{{ $logements->count() }} résultat{{ $logements->count() > 1 ? 's' : '' }}</span>

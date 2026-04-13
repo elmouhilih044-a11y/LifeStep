@@ -175,11 +175,10 @@
         </div>
       @endif
     </div>
-
-
-    {{-- ══════════════════════════════════
+ {{-- ══════════════════════════════════
          SECTION COMPATIBILITÉ HERO
     ══════════════════════════════════ --}}
+    @if(!Auth::user()?->is_admin)
     @auth
       @php
         $profile = Auth::user()->lifeProfile;
@@ -342,6 +341,10 @@
         </div>
       @endif
     @endauth
+@endif
+
+   
+   
 
     {{-- ══════════════════════════════════
          LAYOUT 2 COLONNES
