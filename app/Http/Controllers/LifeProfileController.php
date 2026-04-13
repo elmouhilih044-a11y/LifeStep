@@ -23,6 +23,10 @@ class LifeProfileController extends Controller
      */
     public function create()
     {
+
+        if (Auth::user()->is_admin) {
+            return redirect()->route('logements.index');
+        }
         return view('life_profiles.create');
     }
 
@@ -31,6 +35,10 @@ class LifeProfileController extends Controller
      */
     public function store(StoreLifeProfileRequest $request)
     {
+
+        if (Auth::user()->is_admin) {
+            return redirect()->route('logements.index');
+        }
         $data = $request->validated();
         $existingProfile = LifeProfile::where('user_id', Auth::id())->first();
         if ($existingProfile) {
@@ -48,6 +56,10 @@ class LifeProfileController extends Controller
      */
     public function show()
     {
+
+        if (Auth::user()->is_admin) {
+            return redirect()->route('logements.index');
+        }
         $profil = LifeProfile::where('user_id', Auth::id())->first();
         if (!$profil) {
             return redirect()->route('life_profiles.create');
@@ -61,6 +73,10 @@ class LifeProfileController extends Controller
      */
     public function edit()
     {
+
+        if (Auth::user()->is_admin) {
+            return redirect()->route('logements.index');
+        }
         $profil = LifeProfile::where('user_id', Auth::id())->first();
 
         if (!$profil) {
@@ -75,6 +91,10 @@ class LifeProfileController extends Controller
      */
     public function update(UpdateLifeProfileRequest $request)
     {
+
+        if (Auth::user()->is_admin) {
+            return redirect()->route('logements.index');
+        }
 
         $profil = LifeProfile::where('user_id', Auth::id())->first();
 

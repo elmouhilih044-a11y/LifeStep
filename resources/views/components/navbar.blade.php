@@ -62,10 +62,12 @@
               <p class="text-sm font-bold text-ink truncate">{{ Auth::user()->name }}</p>
             </div>
 
+            @unless(Auth::user()->is_admin)
             <a href="{{ route('life_profiles.show') }}"
                class="block px-6 py-3 text-sm font-semibold hover:bg-surface {{ request()->routeIs('life_profiles.*') ? 'text-primary' : '' }}">
               Mon Profil de Vie
             </a>
+            @endunless
             <a href="{{ route('favorites.index') }}"
                class="block px-6 py-3 text-sm font-semibold hover:bg-surface {{ request()->routeIs('favorites.*') ? 'text-primary' : '' }}">
               Mes Favoris

@@ -25,21 +25,21 @@ class LogementController extends Controller
                     ->orWhere('city', 'like', "%{$search}%")
                     ->orWhere('address', 'like', "%{$search}%")
                     ->orWhere('description', 'like', "%{$search}%")
-                    ->orWhere('type','like',"%{$search}%");
-                    
+                    ->orWhere('type', 'like', "%{$search}%");
             });
         }
         $logements = $query->latest()->get();
 
-        $profile = Auth::user()->lifeProfile;
+        $user = Auth::user();
+       $profile = $user?->is_admin ? null : $user?->lifeProfile;
         foreach ($logements as $logement) {
             $result = $compatibilityService->calculate($profile, $logement);
             $logement->score = $result['score'];
             $logement->label = $result['label'];
         }
-       if (!$request->filled('q')) {
-    $logements = $logements->sortByDesc('score')->values();
-}
+        if (!$request->filled('q')) {
+            $logements = $logements->sortByDesc('score')->values();
+        }
         return view('logements.index', compact('logements'));
     }
 
@@ -89,8 +89,8 @@ class LogementController extends Controller
     public function show(Logement $logement, CompatibilityService $compatibilityService)
     {
         $logement->load('tags', 'badges', 'pictures');
-
-        $profile = Auth::user()?->lifeProfile;
+        $user = Auth::user();
+        $profile = $user?->is_admin ? null : $user?->lifeProfile;
         $result = $compatibilityService->calculate($profile, $logement);
         $logement->score = $result['score'];
         $logement->label = $result['label'];
