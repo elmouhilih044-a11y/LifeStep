@@ -24,7 +24,9 @@ class LogementController extends Controller
                 $q->where('title', 'like', "%{$search}%")
                     ->orWhere('city', 'like', "%{$search}%")
                     ->orWhere('address', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%");
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhere('type','like',"%{$search}%");
+                    
             });
         }
         $logements = $query->latest()->get();
@@ -35,7 +37,9 @@ class LogementController extends Controller
             $logement->score = $result['score'];
             $logement->label = $result['label'];
         }
-        $logements = $logements->sortByDesc('score')->values();
+       if (!$request->filled('q')) {
+    $logements = $logements->sortByDesc('score')->values();
+}
         return view('logements.index', compact('logements'));
     }
 

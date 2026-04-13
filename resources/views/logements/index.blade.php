@@ -68,22 +68,42 @@
 
     {{-- ── Listings Grid ── --}}
     @if($logements->isEmpty())
-      <div class="flex flex-col items-center justify-center py-24 text-center">
-        <div class="w-20 h-20 bg-primary-light rounded-full flex items-center justify-center mb-6">
-          <svg class="w-10 h-10 text-primary" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955a1.5 1.5 0 012.092 0L22.25 12M4.5 9.75v10.125A1.125 1.125 0 005.625 21h4.5a1.125 1.125 0 001.125-1.125V15a1.125 1.125 0 011.125-1.125h2.25A1.125 1.125 0 0115.75 15v4.875A1.125 1.125 0 0016.875 21h4.5a1.125 1.125 0 001.125-1.125V9.75"/>
-          </svg>
+      @if(request()->filled('q'))
+        {{-- ── Aucun résultat pour cette recherche ── --}}
+        <div class="flex flex-col items-center justify-center py-24 text-center">
+          <div class="w-20 h-20 bg-surface rounded-full flex items-center justify-center mb-6">
+            <svg class="w-10 h-10 text-muted" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
+            </svg>
+          </div>
+          <h2 class="text-2xl font-bold text-ink">Aucun résultat trouvé</h2>
+          <p class="text-muted mt-2 max-w-xs text-sm">
+            Aucun logement ne correspond à <span class="font-semibold text-ink">« {{ request('q') }} »</span>.
+          </p>
+          <a href="{{ route('logements.index') }}"
+             class="mt-8 inline-flex items-center gap-2 border border-border text-ink font-semibold px-6 py-3 rounded-xl hover:bg-surface transition">
+            Réinitialiser la recherche
+          </a>
         </div>
-        <h2 class="text-2xl font-bold text-ink">Aucun logement disponible</h2>
-        <p class="text-muted mt-2 max-w-xs text-sm">Commencez par ajouter votre premier bien immobilier.</p>
-        <a href="{{ route('logements.create') }}"
-           class="mt-8 inline-flex items-center gap-2 bg-primary hover:bg-primary-dark text-white font-semibold px-6 py-3 rounded-xl transition">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
-          </svg>
-          Ajouter un logement
-        </a>
-      </div>
+      @else
+        {{-- ── Aucun logement du tout ── --}}
+        <div class="flex flex-col items-center justify-center py-24 text-center">
+          <div class="w-20 h-20 bg-primary-light rounded-full flex items-center justify-center mb-6">
+            <svg class="w-10 h-10 text-primary" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955a1.5 1.5 0 012.092 0L22.25 12M4.5 9.75v10.125A1.125 1.125 0 005.625 21h4.5a1.125 1.125 0 001.125-1.125V15a1.125 1.125 0 011.125-1.125h2.25A1.125 1.125 0 0115.75 15v4.875A1.125 1.125 0 0016.875 21h4.5a1.125 1.125 0 001.125-1.125V9.75"/>
+            </svg>
+          </div>
+          <h2 class="text-2xl font-bold text-ink">Aucun logement disponible</h2>
+          <p class="text-muted mt-2 max-w-xs text-sm">Commencez par ajouter votre premier bien immobilier.</p>
+          <a href="{{ route('logements.create') }}"
+             class="mt-8 inline-flex items-center gap-2 bg-primary hover:bg-primary-dark text-white font-semibold px-6 py-3 rounded-xl transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+            </svg>
+            Ajouter un logement
+          </a>
+        </div>
+      @endif
     @else
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         @foreach($logements as $logement)
