@@ -2,6 +2,13 @@
 
 @section('title', 'Publier un logement – LifeStep+')
 
+@section('styles')
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>
+  .leaflet-container { font-family: inherit; }
+</style>
+@endsection
+
 @section('content')
 
 <div class="pt-20">
@@ -326,6 +333,43 @@
       </div>
 
 
+
+      {{-- ── Section Carte : Localisation ── --}}
+      <div class="border border-border rounded-2xl p-6 bg-white shadow-card">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-7 h-7 bg-primary-light rounded-lg flex items-center justify-center">
+            <svg class="w-3.5 h-3.5 text-primary" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/>
+            </svg>
+          </div>
+          <h2 class="font-bold text-ink text-sm uppercase tracking-wider">Localisation sur la carte</h2>
+          <div class="flex-1 h-px bg-border"></div>
+        </div>
+
+        <p class="text-xs text-muted mb-4">Cliquez sur la carte ou déplacez le marqueur pour définir la position exacte du logement.</p>
+
+        <div id="map" class="w-full rounded-xl overflow-hidden border border-border" style="height: 340px;"></div>
+
+        <div class="flex items-center gap-4 mt-4">
+          <div class="flex-1">
+            <label class="block text-xs font-semibold text-muted uppercase tracking-wide mb-1">Latitude</label>
+            <input type="text" id="lat-display" class="w-full border border-border rounded-xl px-4 py-2 text-sm text-ink bg-surface" placeholder="cliquez sur la carte…" readonly/>
+          </div>
+          <div class="flex-1">
+            <label class="block text-xs font-semibold text-muted uppercase tracking-wide mb-1">Longitude</label>
+            <input type="text" id="lng-display" class="w-full border border-border rounded-xl px-4 py-2 text-sm text-ink bg-surface" placeholder="cliquez sur la carte…" readonly/>
+          </div>
+          <button type="button" id="reset-map"
+                  class="shrink-0 mt-5 text-xs font-semibold text-muted border border-border px-4 py-2 rounded-xl hover:border-red-300 hover:text-red-400 transition">
+            Effacer
+          </button>
+        </div>
+
+        <input type="hidden" name="latitude"  id="latitude"  value="{{ old('latitude') }}"/>
+        <input type="hidden" name="longitude" id="longitude" value="{{ old('longitude') }}"/>
+      </div>
+
       {{-- ── Submit ── --}}
       <div class="flex items-center gap-4 pt-2 pb-10">
         <button type="submit"
@@ -349,7 +393,9 @@
 @endsection
 
 @section('scripts')
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
+  // ── Photo preview ─────────────────────────────────
   document.getElementById('pictures-input').addEventListener('change', function () {
     const preview = document.getElementById('photo-preview');
     preview.innerHTML = '';
@@ -374,5 +420,56 @@
       reader.readAsDataURL(file);
     });
   });
+
+  // ── Leaflet map (create — no existing coords) ─────
+  (function () {
+    const DEFAULT_LAT = 33.5731;
+    const DEFAULT_LNG = -7.5898; // Casablanca
+
+    const map = L.map('map').setView([DEFAULT_LAT, DEFAULT_LNG], 12);
+    setTimeout(() => {
+    map.invalidateSize();
+}, 100);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    const icon = L.divIcon({
+      html: '<div style="width:18px;height:18px;background:#FF385C;border:3px solid #fff;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,0.3);"></div>',
+      iconSize: [18, 18], iconAnchor: [9, 9], className: ''
+    });
+
+    let marker = null;
+
+    // Restore old() value if validation failed
+    const savedLat = document.getElementById('latitude').value;
+    const savedLng = document.getElementById('longitude').value;
+    if (savedLat && savedLng) {
+      marker = L.marker([parseFloat(savedLat), parseFloat(savedLng)], { icon, draggable: true }).addTo(map);
+      map.setView([parseFloat(savedLat), parseFloat(savedLng)], 14);
+      setCoords(parseFloat(savedLat), parseFloat(savedLng));
+      marker.on('dragend', () => setCoords(marker.getLatLng().lat, marker.getLatLng().lng));
+    }
+
+    map.on('click', function (e) {
+      if (marker) marker.remove();
+      marker = L.marker(e.latlng, { icon, draggable: true }).addTo(map);
+      setCoords(e.latlng.lat, e.latlng.lng);
+      marker.on('dragend', () => setCoords(marker.getLatLng().lat, marker.getLatLng().lng));
+    });
+
+    document.getElementById('reset-map').addEventListener('click', function () {
+      if (marker) { marker.remove(); marker = null; }
+      setCoords('', '');
+    });
+
+    function setCoords(lat, lng) {
+      document.getElementById('latitude').value  = lat;
+      document.getElementById('longitude').value = lng;
+      document.getElementById('lat-display').value = lat ? parseFloat(lat).toFixed(6) : '';
+      document.getElementById('lng-display').value = lng ? parseFloat(lng).toFixed(6) : '';
+    }
+  })();
 </script>
 @endsection

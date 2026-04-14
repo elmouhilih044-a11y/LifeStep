@@ -28,7 +28,7 @@
       }
     }
   </script>
-  @stack('styles')
+  @yield('styles')
 </head>
 <body class="bg-white text-ink font-body antialiased">
 
@@ -40,6 +40,6 @@
 
   <x-footer/>
 
-  @stack('scripts')
+  @yield('scripts')
 </body>
 </html>
