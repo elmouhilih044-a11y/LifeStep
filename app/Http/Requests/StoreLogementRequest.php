@@ -20,22 +20,23 @@ class StoreLogementRequest extends FormRequest
      *
      * @return array<string, ValidationRule|array<mixed>|string>
      */
-  public function rules()
-{
-    return [
-        'title' => 'required|string|max:255',
-        'type' => 'required|string|max:100',
-        'price' => 'required|numeric|min:0',
-        'address' => 'required|string|max:255',
-        'city' => 'required|string|max:100',
-        'bathrooms' => 'required|integer|min:0',
-        'bedrooms' => 'required|integer|min:0',
-        'status' => 'required|in:available,reserved,rented,sold',
-        'description' => 'nullable|string',
-        'phone' => 'required|string|max:20',
-        'surface' => 'required|numeric|min:0',
-        'user_id' => 'required|exists:users,id',
-    ];
-}
-
+    public function rules()
+    {
+        return [
+            'title' => 'required|string|max:255',
+            'type' => 'required|string|max:100',
+            'price' => 'required|numeric|min:0',
+            'address' => 'required|string|max:255',
+            'city' => 'required|string|max:100',
+            'bathrooms' => 'required|integer|min:0',
+            'bedrooms' => 'required|integer|min:0',
+            'status' => 'required|in:available,reserved,rented,sold',
+            'description' => 'nullable|string',
+            'phone' => 'required|string|max:20',
+            'surface' => 'required|numeric|min:0',
+            'user_id' => 'required|exists:users,id',
+            'latitude' => 'nullable|numeric|between:-90,90',
+            'longitude' => 'nullable|numeric|between:-180,180',
+        ];
+    }
 }

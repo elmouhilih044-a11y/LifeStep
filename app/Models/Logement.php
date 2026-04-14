@@ -20,7 +20,9 @@ class Logement extends Model
         'status',
         'description',
         'phone',
-        'user_id'
+        'user_id',
+        'latitude',
+        'longitude',
     ];
 
     public function user()
@@ -38,17 +40,17 @@ class Logement extends Model
         return $this->belongsToMany(Tag::class);
     }
 
- public function badges()
-{
-    return $this->belongsToMany(Badge::class, 'logement_badge');
-}
+    public function badges()
+    {
+        return $this->belongsToMany(Badge::class, 'logement_badge');
+    }
     public function compatibilities()
     {
         return $this->hasMany(Compatibility::class);
     }
 
-  public function favoritedBy()
-{
-    return $this->belongsToMany(User::class, 'favorites');
-}
+    public function favoritedBy()
+    {
+        return $this->belongsToMany(User::class, 'favorites');
+    }
 }
