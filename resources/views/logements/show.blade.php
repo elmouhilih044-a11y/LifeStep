@@ -2,6 +2,10 @@
 
 @section('title', $logement->title . ' – LifeStep+')
 
+@section('styles')
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+@endsection
+
 @section('content')
 
 <div class="pt-20">
@@ -423,6 +427,14 @@
           </div>
         @endif
 
+        {{-- ── Carte Leaflet ── --}}
+      @if(!is_null($logement->latitude) && !is_null($logement->longitude))
+          <div class="border border-border rounded-2xl overflow-hidden bg-white shadow-card">
+            <p class="text-xs font-bold text-muted uppercase tracking-widest px-6 pt-5 pb-3">Localisation</p>
+            <div id="logement-map" style="height: 300px; width: 100%;"></div>
+          </div>
+        @endif
+
         {{-- Disponibilité + Propriétaire (côte à côte) --}}
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
@@ -590,4 +602,37 @@
     });
   });
 </script>
+
+@if(!is_null($logement->latitude) && !is_null($logement->longitude))
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  (function () {
+    var lat = {{ $logement->latitude }};
+    var lng = {{ $logement->longitude }};
+
+    var map = L.map('logement-map', { scrollWheelZoom: false }).setView([lat, lng], 15);
+    setTimeout(() => {
+    map.invalidateSize();
+}, 100);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      maxZoom: 19,
+    }).addTo(map);
+
+    var icon = L.divIcon({
+      className: '',
+      html: '<div style="width:36px;height:36px;background:#FF385C;border:3px solid #fff;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 2px 8px rgba(0,0,0,0.25);"></div>',
+      iconSize: [36, 36],
+      iconAnchor: [18, 36],
+      popupAnchor: [0, -38],
+    });
+
+    L.marker([lat, lng], { icon: icon })
+      .addTo(map)
+      .bindPopup('<strong>{{ addslashes($logement->title) }}</strong><br>{{ addslashes($logement->city) }}')
+      .openPopup();
+  })();
+</script>
+@endif
 @endsection
