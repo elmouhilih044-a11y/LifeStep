@@ -140,13 +140,18 @@
 
               {{-- Actions (hover) --}}
               <div class="absolute bottom-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition">
+
+               @can('update', $logement)
                 <a href="{{ route('logements.edit', $logement) }}"
+                
                    class="bg-white rounded-full p-1.5 shadow hover:bg-surface transition">
                   <svg class="w-4 h-4 text-ink" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/>
                     <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 7.125L18 10.5"/>
                   </svg>
                 </a>
+                @endcan
+                @can ('delete',$logement)
                 <form action="{{ route('logements.destroy', $logement) }}" method="POST">
                   @csrf
                   @method('DELETE')
@@ -158,6 +163,7 @@
                     </svg>
                   </button>
                 </form>
+                @endcan
               </div>
             </div>
 
