@@ -15,6 +15,15 @@ class ReservationController extends Controller
      */
     public function store(StoreReservationRequest $request, Logement $logement)
     {
+        
+    $logementReserved = Reservation::where('logement_id', $logement->id)
+        ->whereIn('status', ['pending', 'paid'])
+        ->exists();
+
+    if ($logementReserved) {
+        return back()->with('error', 'Ce logement est déjà réservé.');
+    }
+
          $totalPrice = $logement->price;
            $depositAmount = $totalPrice * 0.10;
   Reservation::create([
