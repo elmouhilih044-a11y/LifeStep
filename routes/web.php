@@ -70,4 +70,8 @@ Route::middleware(['auth','admin'])->prefix('admin')->group(function(){
 Route::post('/logements/{logement}/reserve', [ReservationController::class, 'store'])
     ->name('reservations.store')
     ->middleware('auth');
+
+    Route::post('/reservations/{reservation}/cancel', [ReservationController::class, 'cancel'])
+    ->name('reservations.cancel')
+    ->middleware('auth');
    

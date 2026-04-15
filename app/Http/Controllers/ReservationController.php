@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreReservationRequest;
 use App\Models\Logement;
 use App\Models\Reservation;
-
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ReservationController extends Controller
@@ -15,7 +13,7 @@ class ReservationController extends Controller
      */
     public function store(StoreReservationRequest $request, Logement $logement)
     {
-        
+
     $logementReserved = Reservation::where('logement_id', $logement->id)
         ->whereIn('status', ['pending', 'paid'])
         ->exists();
@@ -36,5 +34,28 @@ class ReservationController extends Controller
     ]);
       return back()->with('success', 'Réservation créée');
     }
+
+    public function cancel(Reservation $reservation)
+{
+    $this->authorize('cancel', $reservation);
+
+    $hours = now()->diffInHours($reservation->start_date);
+
+    if ($hours >= 24) {
+        $reservation->update([
+            'status' => 'cancelled',
+            'cancelled_at' => now(),
+        ]);
+
+        return back()->with('success', 'Remboursement effectué.');
+    } else {
+        $reservation->update([
+            'status' => 'cancelled',
+            'cancelled_at' => now(),
+        ]);
+
+        return back()->with('error', 'Annulation tardive. Pas de remboursement.');
+    }
+}
 
 }
