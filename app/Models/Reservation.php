@@ -11,6 +11,8 @@ class Reservation extends Model
     'logement_id',
     'total_price',
     'deposit_amount',
+    'payment_method',
+    'payment_status',
     'start_date',
     'status',
     'cancelled_at',

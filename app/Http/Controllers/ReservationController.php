@@ -24,14 +24,16 @@ class ReservationController extends Controller
 
          $totalPrice = $logement->price;
            $depositAmount = $totalPrice * 0.10;
-  Reservation::create([
-        'user_id' => Auth::id(),
-        'logement_id' => $logement->id,
-        'total_price' => $totalPrice,
-        'deposit_amount' => $depositAmount,
-        'status' => 'pending',
-        'start_date' => now(),
-    ]);
+Reservation::create([
+    'user_id' => Auth::id(),
+    'logement_id' => $logement->id,
+    'total_price' => $totalPrice,
+    'deposit_amount' => $depositAmount,
+    'payment_method' => 'manual',
+    'payment_status' => 'pending',
+    'status' => 'pending',
+    'start_date' => now(),
+]);
       return back()->with('success', 'Réservation créée');
     }
 
