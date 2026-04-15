@@ -51,4 +51,9 @@ public function favorites()
 {
     return $this->belongsToMany(Logement::class, 'favorites');
 }
+
+public function reservations()
+{
+    return $this->hasMany(Reservation::class);
+}
 }
