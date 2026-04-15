@@ -60,4 +60,16 @@ Reservation::create([
     }
 }
 
+public function confirmPayment(Reservation $reservation)
+{
+    $this->authorize('confirmPayment', $reservation);
+
+    $reservation->update([
+        'payment_status' => 'verified',
+        'status' => 'paid',
+    ]);
+
+    return back()->with('success', 'Paiement confirmé avec succès.');
+}
+
 }

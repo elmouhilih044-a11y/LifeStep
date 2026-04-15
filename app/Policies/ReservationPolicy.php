@@ -13,6 +13,11 @@ public function cancel(User $user, Reservation $reservation)
 {
     return $user->id === $reservation->user_id;
 }
+
+public function confirmPayment(User $user, Reservation $reservation): bool
+{
+    return $user->role === 'admin';
+}
     /**
      * Determine whether the user can view any models.
      */
