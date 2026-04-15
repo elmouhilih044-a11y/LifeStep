@@ -6,7 +6,7 @@ use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\LifeProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LogementController;
-
+use App\Http\Controllers\ReservationController;
 
 Route::get('/', function () {
     $stats = [
@@ -64,4 +64,10 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth','admin'])->prefix('admin')->group(function(){
     Route::get('/', [AdminController::class, 'index'])->name('admin.dashboard');
 });
+
+
+
+Route::post('/logements/{logement}/reserve', [ReservationController::class, 'store'])
+    ->name('reservations.store')
+    ->middleware('auth');
    
