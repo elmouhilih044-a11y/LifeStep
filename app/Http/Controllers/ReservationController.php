@@ -64,12 +64,16 @@ public function confirmPayment(Reservation $reservation)
 {
     $this->authorize('confirmPayment', $reservation);
 
+    if ($reservation->status !== 'pending') {
+        return back()->with('error', 'Impossible de confirmer ce paiement.');
+    }
+
     $reservation->update([
         'payment_status' => 'verified',
         'status' => 'paid',
     ]);
 
-    return back()->with('success', 'Paiement confirmé avec succès.');
+    return back()->with('success', 'Paiement confirmé.');
 }
 
 }
