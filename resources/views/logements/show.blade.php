@@ -105,6 +105,20 @@
       ];
       $s      = $statusMap[$logement->status] ?? ['label' => ucfirst($logement->status), 'text' => 'text-muted', 'bg' => 'bg-surface'];
       $photos = $logement->pictures->sortBy('order');
+
+      // ── Réservation ──
+      $currentUser     = Auth::user();
+      $myReservation   = null;
+      $alreadyReserved = false;
+      if ($currentUser) {
+          $myReservation = \App\Models\Reservation::where('logement_id', $logement->id)
+                              ->where('user_id', $currentUser->id)
+                              ->whereIn('status', ['pending', 'paid'])
+                              ->latest()->first();
+          $alreadyReserved = !$myReservation && \App\Models\Reservation::where('logement_id', $logement->id)
+                              ->whereIn('status', ['pending', 'paid'])->exists();
+      }
+      $depositAmount = round($logement->price * 0.10);
     @endphp
 
 
@@ -475,6 +489,24 @@
      {{-- ── Sidebar droite ── --}}
 <div class="space-y-4">
 
+  {{-- ── Flash messages (sidebar) ── --}}
+  @if(session('success'))
+    <div class="flex items-start gap-3 bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm font-medium px-4 py-3 rounded-xl">
+      <svg class="w-4 h-4 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      {{ session('success') }}
+    </div>
+  @endif
+  @if(session('error'))
+    <div class="flex items-start gap-3 bg-red-50 border border-red-200 text-red-600 text-sm font-medium px-4 py-3 rounded-xl">
+      <svg class="w-4 h-4 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126z"/>
+      </svg>
+      {{ session('error') }}
+    </div>
+  @endif
+
   {{-- Prix --}}
   <div class="bg-[#d1d5db] rounded-2xl p-6 text-gray-800 shadow-card">
     <p class="text-[10px] font-black opacity-60 uppercase tracking-widest mb-2">Loyer mensuel</p>
@@ -482,10 +514,235 @@
       {{ number_format($logement->price, 0, ',', ' ') }}
     </p>
     <p class="text-sm font-semibold opacity-70 mt-1">MAD / mois</p>
-    <div class="mt-5 pt-4 border-t border-white/20">
+    <div class="mt-5 pt-4 border-t border-black/10 flex items-center justify-between">
       <p class="text-[11px] opacity-50">Charges selon contrat</p>
+      <p class="text-[11px] font-bold opacity-60">
+        Acompte · {{ number_format($depositAmount, 0, ',', ' ') }} MAD
+      </p>
     </div>
   </div>
+
+
+  {{-- ════════════════════════════════
+       BLOC RÉSERVATION — états multiples
+  ════════════════════════════════ --}}
+  @auth
+    @if(!$currentUser->is_admin && !$currentUser->role === 'owner')
+    {{-- Pas le propriétaire --}}
+    @endif
+
+    @if($currentUser->is_admin)
+      {{-- ── Admin : confirmation de paiement ── --}}
+      @php
+        $pendingRes = \App\Models\Reservation::where('logement_id', $logement->id)
+                          ->where('status', 'pending')->latest()->first();
+      @endphp
+      @if($pendingRes)
+        <div class="border border-amber-200 bg-amber-50 rounded-2xl p-5">
+          <p class="text-[10px] font-bold text-amber-700 uppercase tracking-widest mb-3">Paiement en attente</p>
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-9 h-9 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
+              <span class="text-amber-700 font-black text-xs">
+                {{ strtoupper(substr($pendingRes->user->name ?? 'U', 0, 2)) }}
+              </span>
+            </div>
+            <div class="min-w-0">
+              <p class="text-sm font-bold text-ink truncate">{{ $pendingRes->user->name ?? '–' }}</p>
+              <p class="text-xs text-muted">Réservé le {{ $pendingRes->created_at->format('d/m/Y') }}</p>
+            </div>
+          </div>
+          <div class="bg-white rounded-xl p-3 mb-4 border border-amber-100">
+            <div class="flex justify-between text-xs text-muted mb-1">
+              <span>Acompte à vérifier</span>
+              <span class="font-bold text-ink">{{ number_format($pendingRes->deposit_amount, 0, ',', ' ') }} MAD</span>
+            </div>
+            <div class="flex justify-between text-xs text-muted">
+              <span>Loyer total</span>
+              <span class="font-bold text-ink">{{ number_format($pendingRes->total_price, 0, ',', ' ') }} MAD</span>
+            </div>
+          </div>
+          <form action="{{ route('reservations.confirmPayment', $pendingRes) }}" method="POST">
+            @csrf @method('PATCH')
+            <button type="submit"
+                    class="w-full flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm py-3 rounded-xl transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              Confirmer le paiement
+            </button>
+          </form>
+        </div>
+      @else
+        <div class="border border-border rounded-2xl p-4 bg-surface text-center">
+          <p class="text-xs text-muted font-medium">Aucun paiement en attente</p>
+        </div>
+      @endif
+
+    @elseif($myReservation)
+      {{-- ── L'utilisateur a déjà une réservation active ── --}}
+
+      @if($myReservation->status === 'paid')
+        {{-- État : payé et confirmé --}}
+        <div class="border border-emerald-200 bg-emerald-50 rounded-2xl p-5">
+          <div class="flex items-center gap-2 mb-4">
+            <div class="w-7 h-7 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">
+              <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+              </svg>
+            </div>
+            <p class="text-sm font-bold text-emerald-700">Réservation confirmée</p>
+          </div>
+          <div class="space-y-2 text-xs mb-4">
+            <div class="flex justify-between">
+              <span class="text-muted">Acompte versé</span>
+              <span class="font-bold text-ink">{{ number_format($myReservation->deposit_amount, 0, ',', ' ') }} MAD</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-muted">Loyer mensuel</span>
+              <span class="font-bold text-ink">{{ number_format($myReservation->total_price, 0, ',', ' ') }} MAD</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-muted">Confirmé le</span>
+              <span class="font-bold text-ink">{{ $myReservation->updated_at->format('d/m/Y') }}</span>
+            </div>
+          </div>
+          {{-- Annulation --}}
+          @php $hoursElapsed = now()->diffInHours($myReservation->created_at); @endphp
+          <form action="{{ route('reservations.cancel', $myReservation) }}" method="POST"
+                onsubmit="return confirm('Annuler cette réservation ? Aucun remboursement possible après 24h.')">
+            @csrf
+            <button type="submit"
+                    class="w-full flex items-center justify-center gap-2 border border-red-200 text-red-500 hover:bg-red-50 font-semibold text-xs py-2.5 rounded-xl transition-colors">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+              @if($hoursElapsed < 24)
+                Annuler (remboursement possible)
+              @else
+                Annuler (sans remboursement)
+              @endif
+            </button>
+          </form>
+        </div>
+
+      @else
+        {{-- État : en attente de confirmation admin --}}
+        <div class="border border-border bg-white rounded-2xl p-5 shadow-card">
+          <div class="flex items-center gap-2 mb-4">
+            <div class="w-7 h-7 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
+              <svg class="w-3.5 h-3.5 text-amber-600" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+            <p class="text-sm font-bold text-ink">En attente de confirmation</p>
+          </div>
+
+          <p class="text-xs text-muted leading-relaxed mb-4">
+            Votre réservation est enregistrée. L'admin va vérifier votre acompte et confirmer sous peu.
+          </p>
+
+          {{-- Récapitulatif paiement manuel --}}
+          <div class="bg-surface rounded-xl p-4 mb-4 border border-border space-y-3">
+            <p class="text-[10px] font-bold text-muted uppercase tracking-widest">Instructions de paiement</p>
+            <div class="flex justify-between text-sm">
+              <span class="text-muted">Acompte à verser</span>
+              <span class="font-black text-ink">{{ number_format($myReservation->deposit_amount, 0, ',', ' ') }} MAD</span>
+            </div>
+            <div class="border-t border-border pt-3 space-y-1.5 text-xs text-muted">
+              <p class="flex items-start gap-2">
+                <svg class="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/>
+                </svg>
+                Virement bancaire ou espèces au propriétaire
+              </p>
+              <p class="flex items-start gap-2">
+                <svg class="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/>
+                </svg>
+                Envoyez le justificatif à l'admin
+              </p>
+            </div>
+          </div>
+
+          {{-- Annulation --}}
+          <form action="{{ route('reservations.cancel', $myReservation) }}" method="POST"
+                onsubmit="return confirm('Annuler cette réservation ?')">
+            @csrf
+            <button type="submit"
+                    class="w-full flex items-center justify-center gap-2 border border-border text-muted hover:border-red-300 hover:text-red-500 font-semibold text-xs py-2.5 rounded-xl transition-colors">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+              Annuler ma réservation
+            </button>
+          </form>
+        </div>
+      @endif
+
+    @elseif($alreadyReserved)
+      {{-- ── Déjà réservé par quelqu'un d'autre ── --}}
+      <div class="border border-border bg-surface rounded-2xl p-5 text-center">
+        <div class="w-10 h-10 bg-white border border-border rounded-full flex items-center justify-center mx-auto mb-3">
+          <svg class="w-5 h-5 text-muted" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/>
+          </svg>
+        </div>
+        <p class="text-sm font-bold text-ink mb-1">Logement non disponible</p>
+        <p class="text-xs text-muted">Ce logement est en cours de réservation.</p>
+      </div>
+
+    @elseif($logement->status === 'available')
+      {{-- ── CTA Réserver ── --}}
+      <div class="border border-border bg-white rounded-2xl p-5 shadow-card">
+        <p class="text-[10px] font-bold text-muted uppercase tracking-widest mb-4">Réserver ce logement</p>
+
+        {{-- Récap acompte --}}
+        <div class="bg-surface rounded-xl p-4 mb-4 border border-border">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs text-muted">Loyer mensuel</span>
+            <span class="text-sm font-bold text-ink">{{ number_format($logement->price, 0, ',', ' ') }} MAD</span>
+          </div>
+          <div class="flex items-center justify-between pt-2 border-t border-border">
+            <span class="text-xs font-bold text-ink">Acompte (10%)</span>
+            <span class="text-sm font-black text-primary">{{ number_format($depositAmount, 0, ',', ' ') }} MAD</span>
+          </div>
+        </div>
+
+        <p class="text-[11px] text-muted leading-relaxed mb-4">
+          L'acompte sera à régler manuellement. Votre réservation sera confirmée après vérification par l'admin.
+        </p>
+
+        <form action="{{ route('reservations.store', $logement) }}" method="POST">
+          @csrf
+          <button type="submit"
+                  class="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white font-bold text-sm py-3.5 rounded-xl transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/>
+            </svg>
+            Réserver maintenant
+          </button>
+        </form>
+      </div>
+
+    @else
+      {{-- ── Logement indisponible (loué, vendu…) ── --}}
+      <div class="border border-border bg-surface rounded-2xl p-5 text-center">
+        <p class="text-sm font-bold text-muted">{{ $s['label'] }}</p>
+        <p class="text-xs text-muted mt-1">Ce logement n'est plus disponible à la réservation.</p>
+      </div>
+    @endif
+
+  @else
+    {{-- Non connecté --}}
+    <div class="border border-border bg-white rounded-2xl p-5 shadow-card text-center">
+      <p class="text-sm font-bold text-ink mb-1">Connectez-vous pour réserver</p>
+      <p class="text-xs text-muted mb-4">Un compte est requis pour effectuer une réservation.</p>
+      <a href="{{ route('login') }}"
+         class="inline-flex items-center justify-center gap-2 w-full bg-primary hover:bg-primary-dark text-white font-bold text-sm py-3 rounded-xl transition-colors">
+        Se connecter
+      </a>
+    </div>
+  @endauth
 
   {{-- CTA Téléphone --}}
   <a href="tel:{{ $logement->phone }}"
