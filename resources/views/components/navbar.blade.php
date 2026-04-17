@@ -68,6 +68,17 @@
       Mon Profil de Vie
     </a>
 @endcan
+
+
+@auth
+    @if(Auth::user()->role === 'owner')
+        <a href="{{ route('logements.mine') }}"
+           class="block px-6 py-3 text-sm font-semibold hover:bg-surface {{ request()->routeIs('logements.mine') ? 'text-primary' : '' }}">
+            Mes logements
+        </a>
+    @endif
+@endauth
+
             <a href="{{ route('favorites.index') }}"
                class="block px-6 py-3 text-sm font-semibold hover:bg-surface {{ request()->routeIs('favorites.*') ? 'text-primary' : '' }}">
               Mes Favoris

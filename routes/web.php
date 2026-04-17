@@ -92,7 +92,7 @@ Route::post('/life-profile/skip', [LifeProfileController::class, 'skip'])
     ->name('life_profiles.skip')
     ->middleware('auth');
 
-Route::get('/mes-logements', [LogementController::class, 'myLogements'])
+Route::get('/mes-logements', [LogementController::class, 'mine'])
     ->name('logements.mine')
     ->middleware('auth');
    
