@@ -12,9 +12,8 @@ class ReservationController extends Controller
        /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreReservationRequest $request, Logement $logement)
-    {
-
+   public function store(StoreReservationRequest $request, Logement $logement)
+{
     $logementReserved = Reservation::where('logement_id', $logement->id)
         ->whereIn('status', ['pending', 'paid'])
         ->exists();
@@ -23,20 +22,40 @@ class ReservationController extends Controller
         return back()->with('error', 'Ce logement est déjà réservé.');
     }
 
-         $totalPrice = $logement->price;
-           $depositAmount = $totalPrice * 0.10;
-Reservation::create([
-    'user_id' => Auth::id(),
-    'logement_id' => $logement->id,
-    'total_price' => $totalPrice,
-    'deposit_amount' => $depositAmount,
-    'payment_method' => 'manual',
-    'payment_status' => 'pending',
-    'status' => 'pending',
-    'start_date' => now(),
-]);
-      return back()->with('success', 'Réservation créée');
-    }
+    $totalPrice = $logement->price;
+    $depositAmount = $totalPrice * 0.10;
+
+    $reservation = Reservation::create([
+        'user_id' => Auth::id(),
+        'logement_id' => $logement->id,
+        'total_price' => $totalPrice,
+        'deposit_amount' => $depositAmount,
+        'payment_method' => 'stripe',
+        'payment_status' => 'pending',
+        'status' => 'pending',
+        'start_date' => now(),
+    ]);
+
+    Stripe::setApiKey(config('services.stripe.secret'));
+
+    $session = Session::create([
+        'mode' => 'payment',
+        'success_url' => route('logements.show', $logement->id),
+        'cancel_url' => route('logements.show', $logement->id),
+        'line_items' => [[
+            'quantity' => 1,
+            'price_data' => [
+                'currency' => 'usd',
+                'unit_amount' => (int) ($depositAmount * 100),
+                'product_data' => [
+                    'name' => 'Acompte réservation',
+                ],
+            ],
+        ]],
+    ]);
+
+    return redirect($session->url);
+}
 
     public function cancel(Reservation $reservation)
 {
@@ -76,26 +95,6 @@ public function confirmPayment(Reservation $reservation)
 
     return back()->with('success', 'Paiement confirmé.');
 }
-Stripe::setApiKey(config('services.stripe.secret'));
 
-$session = Session::create([
-    'mode' => 'payment',
-
-    'success_url' => route('logements.show', $logement->id),
-    'cancel_url' => route('logements.show', $logement->id),
-
-    'line_items' => [[
-        'quantity' => 1,
-        'price_data' => [
-            'currency' => 'usd',
-            'unit_amount' => $depositAmount * 100,
-            'product_data' => [
-                'name' => 'Acompte réservation',
-            ],
-        ],
-    ]],
-]);
-
-return redirect($session->url);
 
 }
