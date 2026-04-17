@@ -2,16 +2,21 @@
 
 @section('title', 'LifeStep+ – Trouvez votre logement idéal')
 
-@push('styles')
+@section('styles')
 <style>
   html { scroll-behavior: smooth; }
-  .hero-bg {
-    background-image:
-      linear-gradient(to bottom right, rgba(0,0,0,0.50) 0%, rgba(0,0,0,0.25) 60%, rgba(255,56,92,0.18) 100%),
-      url('https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=1600&q=80');
-    background-size: cover;
-    background-position: center;
-  }
+ .hero-bg {
+  background-image:
+    linear-gradient(
+      to bottom right,
+      rgba(0,0,0,0.50) 0%,
+      rgba(0,0,0,0.25) 60%,
+      rgba(255,56,92,0.18) 100%
+    ),
+    url('assets/img.jpeg');
+  background-size: cover;
+  background-position: center;
+}
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(28px); }
     to   { opacity: 1; transform: translateY(0); }
@@ -20,7 +25,7 @@
   .fade-up-2 { animation: fadeUp 0.7s 0.25s ease both; }
   .fade-up-3 { animation: fadeUp 0.7s 0.4s ease both; }
 </style>
-@endpush
+@endsection
 
 @section('content')
 

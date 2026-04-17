@@ -712,16 +712,15 @@
           L'acompte sera à régler manuellement. Votre réservation sera confirmée après vérification par l'admin.
         </p>
 
-        <form action="{{ route('reservations.store', $logement) }}" method="POST">
-          @csrf
-          <button type="submit"
-                  class="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white font-bold text-sm py-3.5 rounded-xl transition-colors">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/>
-            </svg>
-            Réserver maintenant
-          </button>
-        </form>
+      <form action="{{ route('reservations.store', $logement->id) }}" method="POST"
+      onsubmit="if(!confirm('Are you sure you want to reserve this property?')) return false; this.querySelector('button').disabled=true;">
+    @csrf
+
+    <button type="submit"
+        class="bg-primary hover:bg-primary-dark text-white font-semibold px-6 py-3 rounded-xl">
+        Réserver maintenant
+    </button>
+</form>
       </div>
 
     @else

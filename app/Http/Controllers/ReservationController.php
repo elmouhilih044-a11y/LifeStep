@@ -5,7 +5,8 @@ use App\Http\Requests\StoreReservationRequest;
 use App\Models\Logement;
 use App\Models\Reservation;
 use Illuminate\Support\Facades\Auth;
-
+use Stripe\Stripe;
+use Stripe\Checkout\Session;
 class ReservationController extends Controller
 {
        /**
@@ -75,5 +76,26 @@ public function confirmPayment(Reservation $reservation)
 
     return back()->with('success', 'Paiement confirmé.');
 }
+Stripe::setApiKey(config('services.stripe.secret'));
+
+$session = Session::create([
+    'mode' => 'payment',
+
+    'success_url' => route('logements.show', $logement->id),
+    'cancel_url' => route('logements.show', $logement->id),
+
+    'line_items' => [[
+        'quantity' => 1,
+        'price_data' => [
+            'currency' => 'usd',
+            'unit_amount' => $depositAmount * 100,
+            'product_data' => [
+                'name' => 'Acompte réservation',
+            ],
+        ],
+    ]],
+]);
+
+return redirect($session->url);
 
 }
