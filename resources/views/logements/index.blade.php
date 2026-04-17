@@ -132,11 +132,11 @@
               </span>
 
               {{-- Score de compatibilité --}}
-              @if(isset($logement->score))
-                <span class="absolute top-3 right-3 bg-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm text-ink">
-                  {{ $logement->label ?? $logement->score . '%' }}
-                </span>
-              @endif
+            @if(isset($logement->score) && $logement->score > 0)
+    <span class="absolute top-3 right-3 bg-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">
+        {{ $logement->score }}%
+    </span>
+@endif
 
               {{-- Actions (hover) --}}
               <div class="absolute bottom-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition">
