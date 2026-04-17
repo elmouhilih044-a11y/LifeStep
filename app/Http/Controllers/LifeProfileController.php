@@ -24,10 +24,9 @@ class LifeProfileController extends Controller
     public function create()
     {
 
-        if (Auth::user()->is_admin) {
-            return redirect()->route('logements.index');
-        }
+        $this->authorize('create', LifeProfile::class);
         return view('life_profiles.create');
+      
     }
 
     /**
@@ -35,10 +34,9 @@ class LifeProfileController extends Controller
      */
     public function store(StoreLifeProfileRequest $request)
     {
+        $this->authorize('create', LifeProfile::class);
 
-        if (Auth::user()->is_admin) {
-            return redirect()->route('logements.index');
-        }
+       
         $data = $request->validated();
         $existingProfile = LifeProfile::where('user_id', Auth::id())->first();
         if ($existingProfile) {
@@ -56,10 +54,8 @@ class LifeProfileController extends Controller
      */
     public function show()
     {
-
-        if (Auth::user()->is_admin) {
-            return redirect()->route('logements.index');
-        }
+$this->authorize('view', LifeProfile::class);
+       
         $profil = LifeProfile::where('user_id', Auth::id())->first();
         if (!$profil) {
             return redirect()->route('life_profiles.create');
@@ -73,10 +69,9 @@ class LifeProfileController extends Controller
      */
     public function edit()
     {
+        $this->authorize('update', LifeProfile::class);
 
-        if (Auth::user()->is_admin) {
-            return redirect()->route('logements.index');
-        }
+        
         $profil = LifeProfile::where('user_id', Auth::id())->first();
 
         if (!$profil) {
@@ -91,11 +86,9 @@ class LifeProfileController extends Controller
      */
     public function update(UpdateLifeProfileRequest $request)
     {
+        $this->authorize('update', LifeProfile::class);
 
-        if (Auth::user()->is_admin) {
-            return redirect()->route('logements.index');
-        }
-
+       
         $profil = LifeProfile::where('user_id', Auth::id())->first();
 
 
@@ -110,9 +103,9 @@ class LifeProfileController extends Controller
     }
 
     public function skip()
-{
-    return redirect()->route('logements.index');
-}
+    {
+        return redirect()->route('logements.index');
+    }
     /**
      * Remove the specified resource from storage.
      */
