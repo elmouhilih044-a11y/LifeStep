@@ -160,4 +160,18 @@ class LogementController extends Controller
         return redirect()->route('logements.index')
             ->with('success', 'Logement supprimé');
     }
+
+    public function mine()
+{
+   
+    if (Auth::user()->role !== 'owner') {
+        abort(403);
+    }
+
+    $logements = \App\Models\Logement::where('user_id', Auth::id())
+        ->latest()
+        ->get();
+
+    return view('logements.mine', compact('logements'));
+}
 }

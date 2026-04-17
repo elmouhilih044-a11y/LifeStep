@@ -91,4 +91,8 @@ Route::patch('/reservations/{reservation}/confirm-payment', [ReservationControll
 Route::post('/life-profile/skip', [LifeProfileController::class, 'skip'])
     ->name('life_profiles.skip')
     ->middleware('auth');
+
+Route::get('/mes-logements', [LogementController::class, 'myLogements'])
+    ->name('logements.mine')
+    ->middleware('auth');
    
