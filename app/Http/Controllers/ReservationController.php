@@ -96,5 +96,30 @@ public function confirmPayment(Reservation $reservation)
     return back()->with('success', 'Paiement confirmé.');
 }
 
+public function success(Reservation $reservation)
+{
+    $this->authorize('cancel', $reservation);
+
+    if ($reservation->payment_status !== 'paid') {
+        $reservation->update([
+            'payment_status' => 'paid',
+            'status' => 'paid',
+        ]);
+    }
+
+    return redirect()
+        ->route('logements.show', $reservation->logement_id)
+        ->with('success', 'Paiement effectué avec succès.');
+}
+
+public function cancelCheckout(Reservation $reservation)
+{
+    $this->authorize('cancel', $reservation);
+
+    return redirect()
+        ->route('logements.show', $reservation->logement_id)
+        ->with('error', 'Paiement annulé.');
+}
+
 
 }

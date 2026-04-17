@@ -75,6 +75,15 @@ Route::post('/logements/{logement}/reserve', [ReservationController::class, 'sto
     ->name('reservations.cancel')
     ->middleware('auth');
 
+
+Route::get('/reservations/{reservation}/success', [ReservationController::class, 'success'])
+    ->name('reservations.success')
+    ->middleware('auth');
+
+Route::get('/reservations/{reservation}/checkout-cancel', [ReservationController::class, 'cancelCheckout'])
+    ->name('reservations.cancelCheckout')
+    ->middleware('auth');
+
 Route::patch('/reservations/{reservation}/confirm-payment', [ReservationController::class, 'confirmPayment'])
     ->name('reservations.confirmPayment')
     ->middleware('auth');
