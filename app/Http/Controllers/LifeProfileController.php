@@ -108,6 +108,11 @@ class LifeProfileController extends Controller
         $profil->update($data);
         return redirect()->route('life_profiles.show');
     }
+
+    public function skip()
+{
+    return redirect()->route('logements.index');
+}
     /**
      * Remove the specified resource from storage.
      */

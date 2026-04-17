@@ -113,6 +113,14 @@
                 </button>
             </div>
         </form>
+        <div class="text-center mt-4">
+    <form action="{{ route('life_profiles.skip') }}" method="POST">
+        @csrf
+        <button type="submit" class="text-sm text-gray-500 hover:underline">
+            Passer pour le moment
+        </button>
+    </form>
+</div>
     </div>
 </div>
 @endsection

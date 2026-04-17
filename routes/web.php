@@ -87,4 +87,8 @@ Route::get('/reservations/{reservation}/checkout-cancel', [ReservationController
 Route::patch('/reservations/{reservation}/confirm-payment', [ReservationController::class, 'confirmPayment'])
     ->name('reservations.confirmPayment')
     ->middleware('auth');
+
+Route::post('/life-profile/skip', [LifeProfileController::class, 'skip'])
+    ->name('life_profiles.skip')
+    ->middleware('auth');
    

@@ -1,125 +1,125 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Http\Requests\StoreReservationRequest;
 use App\Models\Logement;
 use App\Models\Reservation;
 use Illuminate\Support\Facades\Auth;
 use Stripe\Stripe;
 use Stripe\Checkout\Session;
+
 class ReservationController extends Controller
 {
-       /**
+    /**
      * Store a newly created resource in storage.
      */
-   public function store(StoreReservationRequest $request, Logement $logement)
-{
-    $logementReserved = Reservation::where('logement_id', $logement->id)
-        ->whereIn('status', ['pending', 'paid'])
-        ->exists();
+    public function store(StoreReservationRequest $request, Logement $logement)
+    {
+        $logementReserved = Reservation::where('logement_id', $logement->id)
+            ->whereIn('status', ['pending', 'paid'])
+            ->exists();
 
-    if ($logementReserved) {
-        return back()->with('error', 'Ce logement est déjà réservé.');
-    }
+        if ($logementReserved) {
+            return back()->with('error', 'Ce logement est déjà réservé.');
+        }
 
-    $totalPrice = $logement->price;
-    $depositAmount = $totalPrice * 0.10;
+        $totalPrice = $logement->price;
+        $depositAmount = $totalPrice * 0.10;
 
-    $reservation = Reservation::create([
-        'user_id' => Auth::id(),
-        'logement_id' => $logement->id,
-        'total_price' => $totalPrice,
-        'deposit_amount' => $depositAmount,
-        'payment_method' => 'stripe',
-        'payment_status' => 'pending',
-        'status' => 'pending',
-        'start_date' => now(),
-    ]);
+        $reservation = Reservation::create([
+            'user_id' => Auth::id(),
+            'logement_id' => $logement->id,
+            'total_price' => $totalPrice,
+            'deposit_amount' => $depositAmount,
+            'payment_method' => 'stripe',
+            'payment_status' => 'pending',
+            'status' => 'pending',
+            'start_date' => now(),
+        ]);
 
-    Stripe::setApiKey(config('services.stripe.secret'));
+        Stripe::setApiKey(config('services.stripe.secret'));
 
-    $session = Session::create([
-        'mode' => 'payment',
-        'success_url' => route('logements.show', $logement->id),
-        'cancel_url' => route('logements.show', $logement->id),
-        'line_items' => [[
-            'quantity' => 1,
-            'price_data' => [
-                'currency' => 'usd',
-                'unit_amount' => (int) ($depositAmount * 100),
-                'product_data' => [
-                    'name' => 'Acompte réservation',
+        $session = Session::create([
+            'mode' => 'payment',
+           'success_url' => route('reservations.success', $reservation),
+            'cancel_url' => route('reservations.cancelCheckout', $reservation),
+            'line_items' => [[
+                'quantity' => 1,
+                'price_data' => [
+                    'currency' => 'usd',
+                    'unit_amount' => (int) ($depositAmount * 100),
+                    'product_data' => [
+                        'name' => 'Acompte réservation',
+                    ],
                 ],
-            ],
-        ]],
-    ]);
+            ]],
+        ]);
 
-    return redirect($session->url);
-}
+        return redirect($session->url);
+    }
 
     public function cancel(Reservation $reservation)
-{
-    $this->authorize('cancel', $reservation);
+    {
+        $this->authorize('cancel', $reservation);
 
-    $hours = now()->diffInHours($reservation->start_date);
+        $hours = now()->diffInHours($reservation->start_date);
 
-    if ($hours >= 24) {
-        $reservation->update([
-            'status' => 'cancelled',
-            'cancelled_at' => now(),
-        ]);
+        if ($hours >= 24) {
+            $reservation->update([
+                'status' => 'cancelled',
+                'cancelled_at' => now(),
+            ]);
 
-        return back()->with('success', 'Remboursement effectué.');
-    } else {
-        $reservation->update([
-            'status' => 'cancelled',
-            'cancelled_at' => now(),
-        ]);
+            return back()->with('success', 'Remboursement effectué.');
+        } else {
+            $reservation->update([
+                'status' => 'cancelled',
+                'cancelled_at' => now(),
+            ]);
 
-        return back()->with('error', 'Annulation tardive. Pas de remboursement.');
-    }
-}
-
-public function confirmPayment(Reservation $reservation)
-{
-    $this->authorize('confirmPayment', $reservation);
-
-    if ($reservation->status !== 'pending') {
-        return back()->with('error', 'Impossible de confirmer ce paiement.');
+            return back()->with('error', 'Annulation tardive. Pas de remboursement.');
+        }
     }
 
-    $reservation->update([
-        'payment_status' => 'verified',
-        'status' => 'paid',
-    ]);
+    public function confirmPayment(Reservation $reservation)
+    {
+        $this->authorize('confirmPayment', $reservation);
 
-    return back()->with('success', 'Paiement confirmé.');
-}
+        if ($reservation->status !== 'pending') {
+            return back()->with('error', 'Impossible de confirmer ce paiement.');
+        }
 
-public function success(Reservation $reservation)
-{
-    $this->authorize('cancel', $reservation);
-
-    if ($reservation->payment_status !== 'paid') {
         $reservation->update([
-            'payment_status' => 'paid',
+            'payment_status' => 'verified',
             'status' => 'paid',
         ]);
+
+        return back()->with('success', 'Paiement confirmé.');
     }
 
-    return redirect()
-        ->route('logements.show', $reservation->logement_id)
-        ->with('success', 'Paiement effectué avec succès.');
-}
+    public function success(Reservation $reservation)
+    {
+        $this->authorize('cancel', $reservation);
 
-public function cancelCheckout(Reservation $reservation)
-{
-    $this->authorize('cancel', $reservation);
+        if ($reservation->payment_status !== 'paid') {
+            $reservation->update([
+                'payment_status' => 'paid',
+                'status' => 'paid',
+            ]);
+        }
 
-    return redirect()
-        ->route('logements.show', $reservation->logement_id)
-        ->with('error', 'Paiement annulé.');
-}
+        return redirect()
+            ->route('logements.show', $reservation->logement_id)
+            ->with('success', 'Paiement effectué avec succès.');
+    }
 
+    public function cancelCheckout(Reservation $reservation)
+    {
+        $this->authorize('cancel', $reservation);
 
+        return redirect()
+            ->route('logements.show', $reservation->logement_id)
+            ->with('error', 'Paiement annulé.');
+    }
 }
