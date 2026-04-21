@@ -33,7 +33,6 @@
         Logements
       </a>
 
-
     </nav>
 
     {{-- Bas sidebar --}}
@@ -66,7 +65,6 @@
       </span>
     </div>
 
-
     {{-- ── 4 Stat Cards ── --}}
     <div class="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-5">
 
@@ -95,7 +93,6 @@
       </div>
 
     </div>
-
 
     {{-- ── Taux d'occupation ── --}}
     <div class="bg-white border border-border rounded-2xl px-7 py-6 mb-5">
@@ -145,7 +142,6 @@
 
       </div>
     </div>
-
 
     {{-- ── Grille inférieure ── --}}
     <div class="grid grid-cols-1 xl:grid-cols-3 gap-5">
@@ -217,7 +213,6 @@
         @endif
       </div>
 
-
       {{-- Derniers membres (1/3) --}}
       <div class="bg-white border border-border rounded-2xl overflow-hidden">
 
@@ -246,11 +241,31 @@
                       style="background:#FFF0F3;color:#FF385C;">
                   Owner
                 </span>
+              @elseif($u->role === 'admin')
+                <span class="shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-md"
+                      style="background:#E0F2FE;color:#0369A1;">
+                  Admin
+                </span>
               @else
                 <span class="shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-md"
                       style="background:#F2F2F2;color:#888;">
                   User
                 </span>
+              @endif
+
+              @if($u->role !== 'admin')
+                <form action="{{ route('admin.users.toggleBan', $u) }}" method="POST">
+                  @csrf
+                  @method('PATCH')
+
+                  <button type="submit"
+                    class="shrink-0 text-[11px] font-bold px-3 py-1 rounded-lg transition
+                    {{ $u->is_active
+                        ? 'bg-red-50 text-red-600 hover:bg-red-100'
+                        : 'bg-green-50 text-green-600 hover:bg-green-100' }}">
+                    {{ $u->is_active ? 'Bannir' : 'Débannir' }}
+                  </button>
+                </form>
               @endif
 
             </div>

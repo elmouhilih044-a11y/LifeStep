@@ -22,4 +22,15 @@ class AdminController extends Controller
             'availableLogements'
         ));
     }
+    public function toggleBan(User $user)
+{
+    if ($user->role === 'admin') {
+        return back()->with('error', 'Impossible de bannir un administrateur.');
+    }
+
+    $user->is_active = !$user->is_active;
+    $user->save();
+
+    return back()->with('success', $user->is_active ? 'Utilisateur débanni avec succès.' : 'Utilisateur banni avec succès.');
+}
 }

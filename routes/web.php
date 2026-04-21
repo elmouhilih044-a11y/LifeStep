@@ -98,3 +98,6 @@ Route::get('/mes-logements', [LogementController::class, 'mine'])
    
 Route::get('/mes-recommandations', [LogementController::class, 'recommended'])
     ->name('logements.recommended');
+
+Route::patch('/admin/users/{user}/toggle-ban', [AdminUserController::class, 'toggleBan'])
+    ->name('admin.users.toggleBan');

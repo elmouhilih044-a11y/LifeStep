@@ -39,34 +39,45 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
-    public function login(LoginRequest $request)
-    {
-        $data = $request->validated();
+   public function login(LoginRequest $request)
+{
+    $data = $request->validated();
 
-        if (Auth::attempt($data)) {
-            $request->session()->regenerate();
-            $user = Auth::user();
+    if (Auth::attempt($data)) {
+        $request->session()->regenerate();
+        $user = Auth::user();
 
-            if ($user->role === 'admin') {
-                return redirect()->route('admin.dashboard');
-            }
+      
+        if (!$user->is_active) {
+            Auth::logout();
 
-            if ($user->role === 'owner') {
-                return redirect()->route('logements.index');
-            }
-
-            if (!$user->lifeProfile) {
-                return redirect()->route('life_profiles.create');
-            }
-
-            return redirect()->route('logements.index');
-        } else {
             return back()->withErrors([
-                'error' => 'Email ou mot de passe incorrect'
+                'error' => 'Votre compte a été désactivé.'
             ]);
         }
+
+    
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
+
+     
+        if ($user->role === 'owner') {
+            return redirect()->route('logements.index');
+        }
+
+        if (!$user->lifeProfile) {
+            return redirect()->route('life_profiles.create');
+        }
+
+        return redirect()->route('logements.index');
     }
 
+    
+    return back()->withErrors([
+        'error' => 'Email ou mot de passe incorrect'
+    ]);
+}
     public function logout(Request $request)
     {
         Auth::logout();
