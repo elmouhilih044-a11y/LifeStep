@@ -2,12 +2,12 @@
 
 @section('title', 'Créer un compte – LifeStep+')
 
-@push('styles')
+@section('styles')
 <style>
   .auth-bg {
     background-image:
       linear-gradient(to bottom right, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.30) 60%, rgba(255,56,92,0.18) 100%),
-      url('https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=1600&q=80');
+     url('assets/image.jpeg');
     background-size: cover;
     background-position: center;
   }
@@ -17,7 +17,7 @@
   }
   .fade-up { animation: fadeUp 0.6s 0.1s ease both; }
 </style>
-@endpush
+@endsection
 
 @section('content')
 <div class="min-h-screen flex pt-20">
