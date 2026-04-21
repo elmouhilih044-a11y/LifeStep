@@ -13,7 +13,7 @@
       rgba(0,0,0,0.25) 60%,
       rgba(255,56,92,0.18) 100%
     ),
-    url('assets/img.jpeg');
+    url('assets/image.jpeg');
   background-size: cover;
   background-position: center;
 }
