@@ -126,7 +126,8 @@
       @else
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           @foreach($logements as $logement)
-            <div class="group rounded-2xl overflow-hidden border border-border shadow-card hover:shadow-card-hover transition-all duration-300">
+            <a href="{{ route('logements.show', $logement) }}"
+               class="block group rounded-2xl overflow-hidden border border-border shadow-card hover:shadow-card-hover transition-all duration-300">
               <div class="relative overflow-hidden">
 
                 {{-- Photo --}}
@@ -180,7 +181,7 @@
               </div>
 
               {{-- Infos --}}
-              <a href="{{ route('logements.show', $logement) }}" class="block p-5 bg-white">
+              <div class="p-5 bg-white">
                 <div class="flex items-start justify-between gap-2">
                   <h3 class="font-semibold text-ink truncate">{{ $logement->title }}</h3>
                   <p class="text-primary font-bold shrink-0">
@@ -210,8 +211,8 @@
                   <span class="text-border">·</span>
                   <span>{{ $logement->bathrooms }} sdb</span>
                 </div>
-              </a>
-            </div>
+              </div>
+            </a>
           @endforeach
         </div>
       @endif
@@ -281,7 +282,8 @@
 
               <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 @foreach($recommended as $logement)
-                  <div class="group rounded-2xl overflow-hidden border border-border shadow-card hover:shadow-card-hover transition-all duration-300">
+                  <a href="{{ route('logements.show', $logement) }}"
+                     class="block group rounded-2xl overflow-hidden border border-border shadow-card hover:shadow-card-hover transition-all duration-300">
                     <div class="relative overflow-hidden">
 
                       @if($logement->pictures->isNotEmpty())
@@ -306,7 +308,7 @@
                       </span>
                     </div>
 
-                    <a href="{{ route('logements.show', $logement) }}" class="block p-5 bg-white">
+                    <div class="p-5 bg-white">
                       <div class="flex items-start justify-between gap-2">
                         <h3 class="font-semibold text-ink truncate">{{ $logement->title }}</h3>
                         <p class="text-primary font-bold shrink-0">
@@ -352,8 +354,8 @@
                         <span class="text-border">·</span>
                         <span>{{ $logement->bathrooms }} sdb</span>
                       </div>
-                    </a>
-                  </div>
+                    </div>
+                  </a>
                 @endforeach
               </div>
             @endif
