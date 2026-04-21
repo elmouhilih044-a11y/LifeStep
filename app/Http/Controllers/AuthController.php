@@ -20,7 +20,11 @@ public function register(RegisterRequest $request){
     $user=User::create($data);
     Auth::login($user);
     $request->session()->regenerate();
-   return redirect()->route('life_profiles.create');
+  if ($user->role === 'owner') {
+    return redirect()->route('logements.index');
+}
+
+return redirect()->route('life_profiles.create');
 } 
 
 public function showLogin(){
