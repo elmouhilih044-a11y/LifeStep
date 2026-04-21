@@ -31,7 +31,7 @@ class LogementController extends Controller
         $logements = $query->latest()->get();
 
         $user = Auth::user();
-       $profile = $user?->is_admin ? null : $user?->lifeProfile;
+       $profile = $user?->role === 'admin' ? null : $user?->lifeProfile;
         foreach ($logements as $logement) {
             $result = $compatibilityService->calculate($profile, $logement);
             $logement->score = $result['score'];
@@ -90,7 +90,7 @@ class LogementController extends Controller
     {
         $logement->load('tags', 'badges', 'pictures');
         $user = Auth::user();
-        $profile = $user?->is_admin ? null : $user?->lifeProfile;
+     $profile = $user?->role === 'admin' ? null : $user?->lifeProfile;
         $result = $compatibilityService->calculate($profile, $logement);
         $logement->score = $result['score'];
         $logement->label = $result['label'];

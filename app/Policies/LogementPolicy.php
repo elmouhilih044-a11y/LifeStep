@@ -37,7 +37,7 @@ class LogementPolicy
      */
     public function update(User $user, Logement $logement): bool
     {
-      return $user->is_admin || $logement->user_id===$user->id;
+     return $user->role === 'admin' || $logement->user_id === $user->id;
     }
 
     /**
@@ -45,7 +45,7 @@ class LogementPolicy
      */
     public function delete(User $user, Logement $logement): bool
     {
-       return $user->is_admin || $logement->user_id === $user->id;
+      return $user->role === 'admin' || $logement->user_id === $user->id;
     }
 
     /**

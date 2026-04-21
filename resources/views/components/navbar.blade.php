@@ -91,7 +91,7 @@
               </a>
             @endcan
 
-            @if(Auth::user()->is_admin)
+         @if(Auth::user()->role === 'admin')
               <a href="{{ route('admin.dashboard') }}"
                  class="block px-6 py-3 text-sm font-semibold hover:bg-surface border-t border-border text-primary">
                 Dashboard Admin

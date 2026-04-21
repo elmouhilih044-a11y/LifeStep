@@ -197,7 +197,7 @@
     {{-- ══════════════════════════════════
          SECTION COMPATIBILITÉ HERO
     ══════════════════════════════════ --}}
-    @if(!Auth::user()?->is_admin)
+@if(Auth::user()?->role !== 'admin')
     @auth
       @php
         $profile = Auth::user()->lifeProfile;
@@ -499,10 +499,11 @@
         </div>
 
         @auth
-          @if(!$currentUser->is_admin && !$currentUser->role === 'owner')
+         @if($currentUser->role !== 'admin' && $currentUser->role !== 'owner')
           @endif
 
-          @if($currentUser->is_admin)
+          
+@if($currentUser->role === 'admin')
             @php
               $pendingRes = \App\Models\Reservation::where('logement_id', $logement->id)
                                 ->where('status', 'pending')->latest()->first();
