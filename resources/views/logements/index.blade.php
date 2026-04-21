@@ -11,22 +11,21 @@
     <div class="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
         <h1 class="text-4xl font-bold text-ink">Logements disponibles</h1>
-        @if(!Auth::user()?->is_admin)
-       <p class="text-muted mt-1">Trouvez le bien adapté à votre profil de vie</p>
-@endif
-     
+        @if(Auth::user()?->role !== 'admin')
+          <p class="text-muted mt-1">Trouvez le bien adapté à votre profil de vie</p>
+        @endif
       </div>
       <div class="flex items-center gap-3">
         <span class="text-muted text-sm">{{ $logements->count() }} résultat{{ $logements->count() > 1 ? 's' : '' }}</span>
         @can('create', App\Models\Logement::class)
-<a href="{{ route('logements.create') }}"
-   class="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white font-semibold px-5 py-2.5 rounded-xl transition">
-  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
-  </svg>
-  Publier un logement
-</a>
-@endcan
+          <a href="{{ route('logements.create') }}"
+             class="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white font-semibold px-5 py-2.5 rounded-xl transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+            </svg>
+            Publier un logement
+          </a>
+        @endcan
       </div>
     </div>
   </div>
@@ -69,146 +68,328 @@
       </div>
     </div>
 
-    {{-- ── Listings Grid ── --}}
-    @if($logements->isEmpty())
-      @if(request()->filled('q'))
-        {{-- ── Aucun résultat pour cette recherche ── --}}
-        <div class="flex flex-col items-center justify-center py-24 text-center">
-          <div class="w-20 h-20 bg-surface rounded-full flex items-center justify-center mb-6">
-            <svg class="w-10 h-10 text-muted" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
-            </svg>
-          </div>
-          <h2 class="text-2xl font-bold text-ink">Aucun résultat trouvé</h2>
-          <p class="text-muted mt-2 max-w-xs text-sm">
-            Aucun logement ne correspond à <span class="font-semibold text-ink">« {{ request('q') }} »</span>.
-          </p>
-          <a href="{{ route('logements.index') }}"
-             class="mt-8 inline-flex items-center gap-2 border border-border text-ink font-semibold px-6 py-3 rounded-xl hover:bg-surface transition">
-            Réinitialiser la recherche
-          </a>
-        </div>
-      @else
-        {{-- ── Aucun logement du tout ── --}}
-        <div class="flex flex-col items-center justify-center py-24 text-center">
-          <div class="w-20 h-20 bg-primary-light rounded-full flex items-center justify-center mb-6">
-            <svg class="w-10 h-10 text-primary" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955a1.5 1.5 0 012.092 0L22.25 12M4.5 9.75v10.125A1.125 1.125 0 005.625 21h4.5a1.125 1.125 0 001.125-1.125V15a1.125 1.125 0 011.125-1.125h2.25A1.125 1.125 0 0115.75 15v4.875A1.125 1.125 0 0016.875 21h4.5a1.125 1.125 0 001.125-1.125V9.75"/>
-            </svg>
-          </div>
-          <h2 class="text-2xl font-bold text-ink">Aucun logement disponible</h2>
-          <p class="text-muted mt-2 max-w-xs text-sm">Commencez par ajouter votre premier bien immobilier.</p>
-          <a href="{{ route('logements.create') }}"
-             class="mt-8 inline-flex items-center gap-2 bg-primary hover:bg-primary-dark text-white font-semibold px-6 py-3 rounded-xl transition">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
-            </svg>
-            Ajouter un logement
-          </a>
+    {{-- ── Onglets (uniquement pour les users) ── --}}
+    @auth
+      @if(Auth::user()->role === 'user')
+        <div class="flex gap-1 mb-8 border-b border-border">
+          <button onclick="switchTab('all')" id="tab-all"
+                  class="px-5 py-3 text-sm font-semibold border-b-2 border-primary text-primary transition -mb-px">
+            Tous les logements
+          </button>
+          <button onclick="switchTab('recommended')" id="tab-recommended"
+                  class="px-5 py-3 text-sm font-semibold border-b-2 border-transparent text-muted hover:text-ink transition -mb-px">
+            ✦ Recommandés pour moi
+          </button>
         </div>
       @endif
-    @else
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        @foreach($logements as $logement)
-          <div class="group rounded-2xl overflow-hidden border border-border shadow-card hover:shadow-card-hover transition-all duration-300">
-            <div class="relative overflow-hidden">
+    @endauth
 
-              {{-- Photo --}}
-              @if($logement->pictures->isNotEmpty())
-                <img src="{{ asset('storage/' . $logement->pictures->sortBy('order')->first()->path) }}"
-                     alt="{{ $logement->title }}"
-                     class="w-full h-52 object-cover group-hover:scale-105 transition-transform duration-500"/>
-              @else
-                <div class="w-full h-52 bg-surface flex items-center justify-center">
-                  <svg class="w-14 h-14 text-border" fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955a1.5 1.5 0 012.092 0L22.25 12M4.5 9.75v10.125A1.125 1.125 0 005.625 21h4.5a1.125 1.125 0 001.125-1.125V15a1.125 1.125 0 011.125-1.125h2.25A1.125 1.125 0 0115.75 15v4.875A1.125 1.125 0 0016.875 21h4.5a1.125 1.125 0 001.125-1.125V9.75"/>
-                  </svg>
-                </div>
-              @endif
-
-              {{-- Badge disponibilité --}}
-              <span class="absolute top-3 left-3 bg-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm {{ $logement->status === 'available' ? 'text-primary' : 'text-muted' }}">
-                {{ $logement->status === 'available' ? 'Disponible' : 'Indisponible' }}
-              </span>
-
-              {{-- Score de compatibilité --}}
-   <span class="absolute top-3 right-3 text-xs font-semibold px-3 py-1 rounded-full shadow
-    {{ $logement->score >= 80 ? 'bg-green-500 text-white' : 
-       ($logement->score >= 50 ? 'bg-yellow-400 text-white' : 
-       'bg-red-500 text-white') }}">
-    {{ $logement->score }}%
-</span>
-
-              {{-- Actions (hover) --}}
-              <div class="absolute bottom-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition">
-
-               @can('update', $logement)
-                <a href="{{ route('logements.edit', $logement) }}"
-                
-                   class="bg-white rounded-full p-1.5 shadow hover:bg-surface transition">
-                  <svg class="w-4 h-4 text-ink" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/>
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 7.125L18 10.5"/>
-                  </svg>
-                </a>
-                @endcan
-                @can ('delete',$logement)
-                <form action="{{ route('logements.destroy', $logement) }}" method="POST">
-                  @csrf
-                  @method('DELETE')
-                  <button type="submit"
-                          class="bg-white rounded-full p-1.5 shadow hover:bg-red-50 transition"
-                          onclick="return confirm('Supprimer ce logement ?')">
-                    <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                  </button>
-                </form>
-                @endcan
-              </div>
+    {{-- ════════════════════════════════
+         VUE : TOUS LES LOGEMENTS
+    ════════════════════════════════ --}}
+    <div id="view-all">
+      @if($logements->isEmpty())
+        @if(request()->filled('q'))
+          <div class="flex flex-col items-center justify-center py-24 text-center">
+            <div class="w-20 h-20 bg-surface rounded-full flex items-center justify-center mb-6">
+              <svg class="w-10 h-10 text-muted" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
+              </svg>
             </div>
-
-            {{-- Infos --}}
-            <a href="{{ route('logements.show', $logement) }}" class="block p-5 bg-white">
-              <div class="flex items-start justify-between gap-2">
-                <h3 class="font-semibold text-ink truncate">{{ $logement->title }}</h3>
-                <p class="text-primary font-bold shrink-0">
-                  {{ number_format($logement->price, 0, ',', ' ') }} €<span class="text-muted font-normal text-xs">/mois</span>
-                </p>
-              </div>
-              <p class="text-muted text-sm mt-1 flex items-center gap-1">
-                <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z"/>
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 19.5l-4.35-4.35"/>
-                </svg>
-                {{ $logement->city }}
-              </p>
-
-              {{-- Tags --}}
-              @if($logement->tags->isNotEmpty())
-                <div class="flex flex-wrap gap-1 mt-3">
-                  @foreach($logement->tags->take(3) as $tag)
-                    <span class="text-xs bg-primary-light text-primary font-medium px-2 py-0.5 rounded-full">
-                      {{ $tag->name }}
-                    </span>
-                  @endforeach
-                </div>
-              @endif
-
-              <div class="flex items-center gap-3 mt-3 text-xs text-muted border-t border-border pt-3">
-                <span>{{ $logement->rooms }} ch.</span>
-                <span class="text-border">·</span>
-                <span>{{ $logement->beds }} lits</span>
-                <span class="text-border">·</span>
-                <span>{{ $logement->bathrooms }} sdb</span>
-              </div>
+            <h2 class="text-2xl font-bold text-ink">Aucun résultat trouvé</h2>
+            <p class="text-muted mt-2 max-w-xs text-sm">
+              Aucun logement ne correspond à <span class="font-semibold text-ink">« {{ request('q') }} »</span>.
+            </p>
+            <a href="{{ route('logements.index') }}"
+               class="mt-8 inline-flex items-center gap-2 border border-border text-ink font-semibold px-6 py-3 rounded-xl hover:bg-surface transition">
+              Réinitialiser la recherche
             </a>
           </div>
-        @endforeach
-      </div>
-    @endif
+        @else
+          <div class="flex flex-col items-center justify-center py-24 text-center">
+            <div class="w-20 h-20 bg-primary-light rounded-full flex items-center justify-center mb-6">
+              <svg class="w-10 h-10 text-primary" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955a1.5 1.5 0 012.092 0L22.25 12M4.5 9.75v10.125A1.125 1.125 0 005.625 21h4.5a1.125 1.125 0 001.125-1.125V15a1.125 1.125 0 011.125-1.125h2.25A1.125 1.125 0 0115.75 15v4.875A1.125 1.125 0 0016.875 21h4.5a1.125 1.125 0 001.125-1.125V9.75"/>
+              </svg>
+            </div>
+            <h2 class="text-2xl font-bold text-ink">Aucun logement disponible</h2>
+            <p class="text-muted mt-2 max-w-xs text-sm">Commencez par ajouter votre premier bien immobilier.</p>
+            <a href="{{ route('logements.create') }}"
+               class="mt-8 inline-flex items-center gap-2 bg-primary hover:bg-primary-dark text-white font-semibold px-6 py-3 rounded-xl transition">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+              </svg>
+              Ajouter un logement
+            </a>
+          </div>
+        @endif
+      @else
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          @foreach($logements as $logement)
+            <div class="group rounded-2xl overflow-hidden border border-border shadow-card hover:shadow-card-hover transition-all duration-300">
+              <div class="relative overflow-hidden">
+
+                {{-- Photo --}}
+                @if($logement->pictures->isNotEmpty())
+                  <img src="{{ asset('storage/' . $logement->pictures->sortBy('order')->first()->path) }}"
+                       alt="{{ $logement->title }}"
+                       class="w-full h-52 object-cover group-hover:scale-105 transition-transform duration-500"/>
+                @else
+                  <div class="w-full h-52 bg-surface flex items-center justify-center">
+                    <svg class="w-14 h-14 text-border" fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955a1.5 1.5 0 012.092 0L22.25 12M4.5 9.75v10.125A1.125 1.125 0 005.625 21h4.5a1.125 1.125 0 001.125-1.125V15a1.125 1.125 0 011.125-1.125h2.25A1.125 1.125 0 0115.75 15v4.875A1.125 1.125 0 0016.875 21h4.5a1.125 1.125 0 001.125-1.125V9.75"/>
+                    </svg>
+                  </div>
+                @endif
+
+                {{-- Badge disponibilité --}}
+                <span class="absolute top-3 left-3 bg-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm {{ $logement->status === 'available' ? 'text-primary' : 'text-muted' }}">
+                  {{ $logement->status === 'available' ? 'Disponible' : 'Indisponible' }}
+                </span>
+
+                {{-- Score --}}
+                <span class="absolute top-3 right-3 text-xs font-semibold px-3 py-1 rounded-full shadow
+                  {{ $logement->score >= 80 ? 'bg-green-500 text-white' : ($logement->score >= 50 ? 'bg-yellow-400 text-white' : 'bg-red-500 text-white') }}">
+                  {{ $logement->score }}%
+                </span>
+
+                {{-- Actions hover --}}
+                <div class="absolute bottom-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition">
+                  @can('update', $logement)
+                    <a href="{{ route('logements.edit', $logement) }}"
+                       class="bg-white rounded-full p-1.5 shadow hover:bg-surface transition">
+                      <svg class="w-4 h-4 text-ink" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/>
+                      </svg>
+                    </a>
+                  @endcan
+                  @can('delete', $logement)
+                    <form action="{{ route('logements.destroy', $logement) }}" method="POST">
+                      @csrf
+                      @method('DELETE')
+                      <button type="submit"
+                              class="bg-white rounded-full p-1.5 shadow hover:bg-red-50 transition"
+                              onclick="return confirm('Supprimer ce logement ?')">
+                        <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                      </button>
+                    </form>
+                  @endcan
+                </div>
+              </div>
+
+              {{-- Infos --}}
+              <a href="{{ route('logements.show', $logement) }}" class="block p-5 bg-white">
+                <div class="flex items-start justify-between gap-2">
+                  <h3 class="font-semibold text-ink truncate">{{ $logement->title }}</h3>
+                  <p class="text-primary font-bold shrink-0">
+                    {{ number_format($logement->price, 0, ',', ' ') }} €<span class="text-muted font-normal text-xs">/mois</span>
+                  </p>
+                </div>
+                <p class="text-muted text-sm mt-1 flex items-center gap-1">
+                  <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 19.5l-4.35-4.35"/>
+                  </svg>
+                  {{ $logement->city }}
+                </p>
+                @if($logement->tags->isNotEmpty())
+                  <div class="flex flex-wrap gap-1 mt-3">
+                    @foreach($logement->tags->take(3) as $tag)
+                      <span class="text-xs bg-primary-light text-primary font-medium px-2 py-0.5 rounded-full">
+                        {{ $tag->name }}
+                      </span>
+                    @endforeach
+                  </div>
+                @endif
+                <div class="flex items-center gap-3 mt-3 text-xs text-muted border-t border-border pt-3">
+                  <span>{{ $logement->rooms }} ch.</span>
+                  <span class="text-border">·</span>
+                  <span>{{ $logement->beds }} lits</span>
+                  <span class="text-border">·</span>
+                  <span>{{ $logement->bathrooms }} sdb</span>
+                </div>
+              </a>
+            </div>
+          @endforeach
+        </div>
+      @endif
+    </div>
+
+    {{-- ════════════════════════════════
+         VUE : RECOMMANDÉS POUR MOI
+    ════════════════════════════════ --}}
+    @auth
+      @if(Auth::user()->role === 'user')
+        <div id="view-recommended" class="hidden">
+
+          @if(!Auth::user()->lifeProfile)
+            {{-- Pas de profil → CTA création --}}
+            <div class="flex flex-col items-center justify-center py-24 text-center">
+              <div class="w-20 h-20 bg-primary-light rounded-full flex items-center justify-center mb-6">
+                <svg class="w-10 h-10 text-primary" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/>
+                </svg>
+              </div>
+              <h2 class="text-2xl font-bold text-ink">Créez votre profil de vie</h2>
+              <p class="text-muted mt-2 max-w-xs text-sm">
+                Définissez vos critères pour voir les logements qui vous correspondent vraiment.
+              </p>
+              <a href="{{ route('life_profiles.create') }}"
+                 class="mt-8 inline-flex items-center gap-2 bg-primary hover:bg-primary-dark text-white font-semibold px-6 py-3 rounded-xl transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+                </svg>
+                Créer mon profil
+              </a>
+            </div>
+
+          @else
+            {{-- A un profil → grille directement --}}
+            @php
+              $recommended = $logements->filter(fn($l) => $l->score >= 50)->sortByDesc('score')->values();
+            @endphp
+
+            @if($recommended->isEmpty())
+              <div class="flex flex-col items-center justify-center py-24 text-center">
+                <div class="w-20 h-20 bg-surface rounded-full flex items-center justify-center mb-6">
+                  <svg class="w-10 h-10 text-muted" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
+                  </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-ink">Aucun logement compatible</h2>
+                <p class="text-muted mt-2 max-w-xs text-sm">
+                  Essayez d'élargir votre budget ou votre zone de recherche.
+                </p>
+                <a href="{{ route('life_profiles.edit') }}"
+                   class="mt-8 inline-flex items-center gap-2 bg-primary hover:bg-primary-dark text-white font-semibold px-6 py-3 rounded-xl transition">
+                  Modifier mon profil
+                </a>
+              </div>
+
+            @else
+              <div class="mb-4 flex items-center justify-between">
+                <p class="text-sm text-muted">
+                  <span class="font-bold text-ink">{{ $recommended->count() }}</span>
+                  logement{{ $recommended->count() > 1 ? 's' : '' }} compatible{{ $recommended->count() > 1 ? 's' : '' }}
+                </p>
+                <p class="text-sm text-muted">
+                  Score moyen : <span class="font-bold text-primary">{{ round($recommended->avg('score')) }}%</span>
+                </p>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                @foreach($recommended as $logement)
+                  <div class="group rounded-2xl overflow-hidden border border-border shadow-card hover:shadow-card-hover transition-all duration-300">
+                    <div class="relative overflow-hidden">
+
+                      @if($logement->pictures->isNotEmpty())
+                        <img src="{{ asset('storage/' . $logement->pictures->sortBy('order')->first()->path) }}"
+                             alt="{{ $logement->title }}"
+                             class="w-full h-52 object-cover group-hover:scale-105 transition-transform duration-500"/>
+                      @else
+                        <div class="w-full h-52 bg-surface flex items-center justify-center">
+                          <svg class="w-14 h-14 text-border" fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955a1.5 1.5 0 012.092 0L22.25 12M4.5 9.75v10.125A1.125 1.125 0 005.625 21h4.5a1.125 1.125 0 001.125-1.125V15a1.125 1.125 0 011.125-1.125h2.25A1.125 1.125 0 0115.75 15v4.875A1.125 1.125 0 0016.875 21h4.5a1.125 1.125 0 001.125-1.125V9.75"/>
+                          </svg>
+                        </div>
+                      @endif
+
+                      <span class="absolute top-3 left-3 bg-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm text-primary">
+                        Disponible
+                      </span>
+
+                      <span class="absolute top-3 right-3 text-xs font-semibold px-3 py-1 rounded-full shadow
+                        {{ $logement->score >= 80 ? 'bg-green-500 text-white' : 'bg-yellow-400 text-white' }}">
+                        {{ $logement->score }}%
+                      </span>
+                    </div>
+
+                    <a href="{{ route('logements.show', $logement) }}" class="block p-5 bg-white">
+                      <div class="flex items-start justify-between gap-2">
+                        <h3 class="font-semibold text-ink truncate">{{ $logement->title }}</h3>
+                        <p class="text-primary font-bold shrink-0">
+                          {{ number_format($logement->price, 0, ',', ' ') }} €<span class="text-muted font-normal text-xs">/mois</span>
+                        </p>
+                      </div>
+                      <p class="text-muted text-sm mt-1 flex items-center gap-1">
+                        <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z"/>
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 19.5l-4.35-4.35"/>
+                        </svg>
+                        {{ $logement->city }}
+                      </p>
+
+                      @if($logement->tags->isNotEmpty())
+                        <div class="flex flex-wrap gap-1 mt-3">
+                          @foreach($logement->tags->take(3) as $tag)
+                            <span class="text-xs bg-primary-light text-primary font-medium px-2 py-0.5 rounded-full">
+                              {{ $tag->name }}
+                            </span>
+                          @endforeach
+                        </div>
+                      @endif
+
+                      {{-- Barre de compatibilité --}}
+                      <div class="mt-3">
+                        <div class="flex justify-between text-xs text-muted mb-1">
+                          <span>Compatibilité</span>
+                          <span class="font-semibold {{ $logement->score >= 80 ? 'text-green-500' : 'text-yellow-500' }}">
+                            {{ $logement->score }}%
+                          </span>
+                        </div>
+                        <div class="h-1.5 bg-surface rounded-full overflow-hidden">
+                          <div class="h-full rounded-full {{ $logement->score >= 80 ? 'bg-green-500' : 'bg-yellow-400' }}"
+                               style="width: {{ $logement->score }}%"></div>
+                        </div>
+                      </div>
+
+                      <div class="flex items-center gap-3 mt-3 text-xs text-muted border-t border-border pt-3">
+                        <span>{{ $logement->rooms }} ch.</span>
+                        <span class="text-border">·</span>
+                        <span>{{ $logement->beds }} lits</span>
+                        <span class="text-border">·</span>
+                        <span>{{ $logement->bathrooms }} sdb</span>
+                      </div>
+                    </a>
+                  </div>
+                @endforeach
+              </div>
+            @endif
+          @endif
+        </div>
+      @endif
+    @endauth
 
   </div>
 </div>
 
+@endsection
+
+@section('scripts')
+<script>
+  function switchTab(tab) {
+    const viewAll = document.getElementById('view-all');
+    const viewRec = document.getElementById('view-recommended');
+    const tabAll  = document.getElementById('tab-all');
+    const tabRec  = document.getElementById('tab-recommended');
+
+    if (tab === 'all') {
+      viewAll.classList.remove('hidden');
+      viewRec?.classList.add('hidden');
+      tabAll.classList.add('border-primary', 'text-primary');
+      tabAll.classList.remove('border-transparent', 'text-muted');
+      tabRec?.classList.remove('border-primary', 'text-primary');
+      tabRec?.classList.add('border-transparent', 'text-muted');
+    } else {
+      viewAll.classList.add('hidden');
+      viewRec?.classList.remove('hidden');
+      tabRec?.classList.add('border-primary', 'text-primary');
+      tabRec?.classList.remove('border-transparent', 'text-muted');
+      tabAll.classList.remove('border-primary', 'text-primary');
+      tabAll.classList.add('border-transparent', 'text-muted');
+    }
+  }
+</script>
 @endsection

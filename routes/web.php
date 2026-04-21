@@ -96,3 +96,5 @@ Route::get('/mes-logements', [LogementController::class, 'mine'])
     ->name('logements.mine')
     ->middleware('auth');
    
+Route::get('/mes-recommandations', [LogementController::class, 'recommended'])
+    ->name('logements.recommended');

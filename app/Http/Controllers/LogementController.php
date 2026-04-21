@@ -174,4 +174,42 @@ class LogementController extends Controller
 
     return view('logements.mine', compact('logements'));
 }
+public function recommended(CompatibilityService $compatibilityService)
+{
+    $user = Auth::user();
+
+    if (!$user || $user->role !== 'user') {
+        abort(403);
+    }
+
+    $lifeProfile = $user->lifeProfile;
+
+    if (!$lifeProfile) {
+        return redirect()->route('life_profiles.create');
+    }
+    $logements = Logement::with('tags', 'badges', 'pictures')
+        ->where('status', 'available')
+        ->latest()
+        ->get();
+
+    $logements = $logements->map(function ($logement) use ($compatibilityService, $lifeProfile) {
+
+            $compatibilityResult = $compatibilityService->calculate($lifeProfile, $logement);
+
+            $logement->score = $compatibilityResult['score'];
+            $logement->label = $compatibilityResult['label'];
+
+            return $logement;
+        })
+     
+        ->filter(function ($logement) {
+            return $logement->score >= 50;
+        })
+
+        ->sortByDesc('score')
+        ->values();
+
+    return view('logements.recommended', compact('logements'));
+}
+
 }
