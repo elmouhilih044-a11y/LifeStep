@@ -193,7 +193,8 @@
         </div>
       @endif
     </div>
- {{-- ══════════════════════════════════
+
+    {{-- ══════════════════════════════════
          SECTION COMPATIBILITÉ HERO
     ══════════════════════════════════ --}}
     @if(!Auth::user()?->is_admin)
@@ -211,7 +212,6 @@
               'label_bg'   => 'bg-emerald-100',
               'label_text' => 'text-emerald-700',
               'icon_color' => '#10b981',
-            
               'sub'        => 'Ce logement correspond parfaitement à votre profil de vie.',
             ],
             $logement->score >= 60 => [
@@ -230,7 +230,6 @@
               'label_bg'   => 'bg-amber-100',
               'label_text' => 'text-amber-700',
               'icon_color' => '#f59e0b',
-          
               'sub'        => 'Ce logement correspond partiellement à votre profil.',
             ],
             default => [
@@ -240,12 +239,10 @@
               'label_bg'   => 'bg-slate-100',
               'label_text' => 'text-slate-600',
               'icon_color' => '#64748b',
-           
               'sub'        => 'Ce logement ne correspond pas encore à votre profil.',
             ],
           };
 
-          // Compute each criterion score
           $budgetPts = 0;
           if ($profile->budget_min && $profile->budget_max) {
             if ($logement->price >= $profile->budget_min && $logement->price <= $profile->budget_max) $budgetPts = 40;
@@ -268,16 +265,12 @@
         <div class="mb-10 rounded-3xl overflow-hidden relative"
              style="box-shadow: 0 8px 40px {{ $sc['glow'] }};">
 
-          {{-- Gradient background --}}
           <div class="bg-gradient-to-br {{ $sc['gradient'] }} px-8 pt-8 pb-6 relative overflow-hidden">
-
-            {{-- Decorative circles --}}
             <div class="absolute -top-10 -right-10 w-48 h-48 bg-white/10 rounded-full pointer-events-none"></div>
             <div class="absolute -bottom-8 -left-8 w-32 h-32 bg-black/5 rounded-full pointer-events-none"></div>
 
             <div class="relative z-10 flex flex-col md:flex-row md:items-center gap-6">
 
-              {{-- Donut score --}}
               <div class="shrink-0 flex items-center justify-center">
                 <div class="relative w-28 h-28">
                   <svg viewBox="0 0 100 100" class="w-28 h-28 -rotate-90">
@@ -294,16 +287,13 @@
                 </div>
               </div>
 
-              {{-- Label + sub --}}
               <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-2 mb-1">
-              
                   <h3 class="text-2xl font-black text-white leading-tight">{{ $logement->label }}</h3>
                 </div>
                 <p class="text-white/75 text-sm leading-relaxed max-w-md">{{ $sc['sub'] }}</p>
               </div>
 
-              {{-- Criteria pills --}}
               <div class="shrink-0 grid grid-cols-2 gap-2">
                 @foreach($criteria as $c)
                   <div class="bg-white/15 backdrop-blur-sm rounded-2xl px-3 py-2.5 text-center min-w-[90px]">
@@ -319,13 +309,11 @@
             </div>
           </div>
 
-          {{-- Progress bar strip --}}
           <div class="bg-white/20 h-1.5">
             <div class="{{ $sc['bar'] }} h-1.5 transition-all duration-1000 ease-out"
                  style="width: {{ $logement->score }}%"></div>
           </div>
 
-          {{-- Bottom info row --}}
           <div class="bg-white/10 backdrop-blur-sm px-8 py-3 flex items-center justify-between gap-4 flex-wrap">
             <p class="text-white/70 text-xs font-medium">
               Score calculé selon votre profil de vie LifeStep+
@@ -338,7 +326,6 @@
         </div>
 
       @else
-        {{-- No profile CTA --}}
         <div class="mb-10 rounded-3xl border-2 border-dashed border-primary/30 bg-primary-light px-8 py-8 flex flex-col sm:flex-row items-center gap-6">
           <div class="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
             <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
@@ -359,14 +346,7 @@
         </div>
       @endif
     @endauth
-@endif
-
-   
-   
-
-    {{-- ══════════════════════════════════
-         LAYOUT 2 COLONNES
-    ══════════════════════════════════ --}}
+    @endif
 
     {{-- Description (pleine largeur, avant la grille) --}}
     @if($logement->description)
@@ -388,8 +368,8 @@
             @php
               $items = [
                 ['icon' => 'M2.25 12l8.954-8.955a1.5 1.5 0 012.092 0L22.25 12M4.5 9.75v10.125A1.125 1.125 0 005.625 21', 'label' => 'Type',     'val' => $logement->type],
-                ['icon' => 'M3.75 5.25h16.5M3.75 12h16.5M3.75 18.75h16.5',                                                  'label' => 'Chambres', 'val' => $logement->bedrooms . ' ch.'],
-                ['icon' => 'M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0',                                          'label' => 'Sdb',      'val' => $logement->bathrooms . ' sdb'],
+                ['icon' => 'M3.75 5.25h16.5M3.75 12h16.5M3.75 18.75h16.5', 'label' => 'Chambres', 'val' => $logement->bedrooms . ' ch.'],
+                ['icon' => 'M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0', 'label' => 'Sdb', 'val' => $logement->bathrooms . ' sdb'],
               ];
               if ($logement->surface)
                 $items[] = ['icon' => 'M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15', 'label' => 'Surface', 'val' => $logement->surface . ' m²'];
@@ -442,17 +422,16 @@
         @endif
 
         {{-- ── Carte Leaflet ── --}}
-      @if(!is_null($logement->latitude) && !is_null($logement->longitude))
+        @if(!is_null($logement->latitude) && !is_null($logement->longitude))
           <div class="border border-border rounded-2xl overflow-hidden bg-white shadow-card">
             <p class="text-xs font-bold text-muted uppercase tracking-widest px-6 pt-5 pb-3">Localisation</p>
             <div id="logement-map" style="height: 300px; width: 100%;"></div>
           </div>
         @endif
 
-        {{-- Disponibilité + Propriétaire (côte à côte) --}}
+        {{-- Disponibilité + Propriétaire --}}
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
-          {{-- Statut --}}
           <div class="border border-border rounded-2xl p-5 bg-white shadow-card flex flex-col justify-between">
             <p class="text-xs font-bold text-muted uppercase tracking-widest mb-3">Disponibilité</p>
             <span class="inline-flex items-center text-sm font-bold px-3 py-1 rounded-full w-fit {{ $s['bg'] }} {{ $s['text'] }}">
@@ -463,7 +442,6 @@
             </p>
           </div>
 
-          {{-- Propriétaire --}}
           @if($logement->user)
             <div class="border border-border rounded-2xl p-5 bg-white shadow-card flex flex-col justify-between">
               <p class="text-xs font-bold text-muted uppercase tracking-widest mb-3">Propriétaire</p>
@@ -485,327 +463,307 @@
 
       </div>
 
+      {{-- ── Sidebar droite ── --}}
+      <div class="space-y-4">
 
-     {{-- ── Sidebar droite ── --}}
-<div class="space-y-4">
-
-  {{-- ── Flash messages (sidebar) ── --}}
-  @if(session('success'))
-    <div class="flex items-start gap-3 bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm font-medium px-4 py-3 rounded-xl">
-      <svg class="w-4 h-4 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-      </svg>
-      {{ session('success') }}
-    </div>
-  @endif
-  @if(session('error'))
-    <div class="flex items-start gap-3 bg-red-50 border border-red-200 text-red-600 text-sm font-medium px-4 py-3 rounded-xl">
-      <svg class="w-4 h-4 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126z"/>
-      </svg>
-      {{ session('error') }}
-    </div>
-  @endif
-
-  {{-- Prix --}}
-  <div class="bg-[#d1d5db] rounded-2xl p-6 text-gray-800 shadow-card">
-    <p class="text-[10px] font-black opacity-60 uppercase tracking-widest mb-2">Loyer mensuel</p>
-    <p class="text-5xl font-black tracking-tight leading-none">
-      {{ number_format($logement->price, 0, ',', ' ') }}
-    </p>
-    <p class="text-sm font-semibold opacity-70 mt-1">MAD / mois</p>
-    <div class="mt-5 pt-4 border-t border-black/10 flex items-center justify-between">
-      <p class="text-[11px] opacity-50">Charges selon contrat</p>
-      <p class="text-[11px] font-bold opacity-60">
-        Acompte · {{ number_format($depositAmount, 0, ',', ' ') }} MAD
-      </p>
-    </div>
-  </div>
-
-
-  {{-- ════════════════════════════════
-       BLOC RÉSERVATION — états multiples
-  ════════════════════════════════ --}}
-  @auth
-    @if(!$currentUser->is_admin && !$currentUser->role === 'owner')
-    {{-- Pas le propriétaire --}}
-    @endif
-
-    @if($currentUser->is_admin)
-      {{-- ── Admin : confirmation de paiement ── --}}
-      @php
-        $pendingRes = \App\Models\Reservation::where('logement_id', $logement->id)
-                          ->where('status', 'pending')->latest()->first();
-      @endphp
-      @if($pendingRes)
-        <div class="border border-amber-200 bg-amber-50 rounded-2xl p-5">
-          <p class="text-[10px] font-bold text-amber-700 uppercase tracking-widest mb-3">Paiement en attente</p>
-          <div class="flex items-center gap-3 mb-4">
-            <div class="w-9 h-9 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
-              <span class="text-amber-700 font-black text-xs">
-                {{ strtoupper(substr($pendingRes->user->name ?? 'U', 0, 2)) }}
-              </span>
-            </div>
-            <div class="min-w-0">
-              <p class="text-sm font-bold text-ink truncate">{{ $pendingRes->user->name ?? '–' }}</p>
-              <p class="text-xs text-muted">Réservé le {{ $pendingRes->created_at->format('d/m/Y') }}</p>
-            </div>
+        @if(session('success'))
+          <div class="flex items-start gap-3 bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm font-medium px-4 py-3 rounded-xl">
+            <svg class="w-4 h-4 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            {{ session('success') }}
           </div>
-          <div class="bg-white rounded-xl p-3 mb-4 border border-amber-100">
-            <div class="flex justify-between text-xs text-muted mb-1">
-              <span>Acompte à vérifier</span>
-              <span class="font-bold text-ink">{{ number_format($pendingRes->deposit_amount, 0, ',', ' ') }} MAD</span>
-            </div>
-            <div class="flex justify-between text-xs text-muted">
-              <span>Loyer total</span>
-              <span class="font-bold text-ink">{{ number_format($pendingRes->total_price, 0, ',', ' ') }} MAD</span>
-            </div>
-          </div>
-          <form action="{{ route('reservations.confirmPayment', $pendingRes) }}" method="POST">
-            @csrf @method('PATCH')
-            <button type="submit"
-                    class="w-full flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm py-3 rounded-xl transition-colors">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-              </svg>
-              Confirmer le paiement
-            </button>
-          </form>
-        </div>
-      @else
-        <div class="border border-border rounded-2xl p-4 bg-surface text-center">
-          <p class="text-xs text-muted font-medium">Aucun paiement en attente</p>
-        </div>
-      @endif
+        @endif
 
-    @elseif($myReservation)
-      {{-- ── L'utilisateur a déjà une réservation active ── --}}
-
-      @if($myReservation->status === 'paid')
-        {{-- État : payé et confirmé --}}
-        <div class="border border-emerald-200 bg-emerald-50 rounded-2xl p-5">
-          <div class="flex items-center gap-2 mb-4">
-            <div class="w-7 h-7 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">
-              <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
-              </svg>
-            </div>
-            <p class="text-sm font-bold text-emerald-700">Réservation confirmée</p>
+        @if(session('error'))
+          <div class="flex items-start gap-3 bg-red-50 border border-red-200 text-red-600 text-sm font-medium px-4 py-3 rounded-xl">
+            <svg class="w-4 h-4 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126z"/>
+            </svg>
+            {{ session('error') }}
           </div>
-          <div class="space-y-2 text-xs mb-4">
-            <div class="flex justify-between">
-              <span class="text-muted">Acompte versé</span>
-              <span class="font-bold text-ink">{{ number_format($myReservation->deposit_amount, 0, ',', ' ') }} MAD</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-muted">Loyer mensuel</span>
-              <span class="font-bold text-ink">{{ number_format($myReservation->total_price, 0, ',', ' ') }} MAD</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-muted">Confirmé le</span>
-              <span class="font-bold text-ink">{{ $myReservation->updated_at->format('d/m/Y') }}</span>
-            </div>
-          </div>
-          {{-- Annulation --}}
-          @php $hoursElapsed = now()->diffInHours($myReservation->created_at); @endphp
-          <form action="{{ route('reservations.cancel', $myReservation) }}" method="POST"
-                onsubmit="return confirm('Annuler cette réservation ? Aucun remboursement possible après 24h.')">
-            @csrf
-            <button type="submit"
-                    class="w-full flex items-center justify-center gap-2 border border-red-200 text-red-500 hover:bg-red-50 font-semibold text-xs py-2.5 rounded-xl transition-colors">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-              </svg>
-              @if($hoursElapsed < 24)
-                Annuler (remboursement possible)
-              @else
-                Annuler (sans remboursement)
-              @endif
-            </button>
-          </form>
-        </div>
+        @endif
 
-      @else
-        {{-- État : en attente de confirmation admin --}}
-        <div class="border border-border bg-white rounded-2xl p-5 shadow-card">
-          <div class="flex items-center gap-2 mb-4">
-            <div class="w-7 h-7 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
-              <svg class="w-3.5 h-3.5 text-amber-600" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
-              </svg>
-            </div>
-            <p class="text-sm font-bold text-ink">En attente de confirmation</p>
-          </div>
-
-          <p class="text-xs text-muted leading-relaxed mb-4">
-            Votre réservation est enregistrée. L'admin va vérifier votre acompte et confirmer sous peu.
+        <div class="bg-[#d1d5db] rounded-2xl p-6 text-gray-800 shadow-card">
+          <p class="text-[10px] font-black opacity-60 uppercase tracking-widest mb-2">Loyer mensuel</p>
+          <p class="text-5xl font-black tracking-tight leading-none">
+            {{ number_format($logement->price, 0, ',', ' ') }}
           </p>
-
-          {{-- Récapitulatif paiement manuel --}}
-          <div class="bg-surface rounded-xl p-4 mb-4 border border-border space-y-3">
-            <p class="text-[10px] font-bold text-muted uppercase tracking-widest">Instructions de paiement</p>
-            <div class="flex justify-between text-sm">
-              <span class="text-muted">Acompte à verser</span>
-              <span class="font-black text-ink">{{ number_format($myReservation->deposit_amount, 0, ',', ' ') }} MAD</span>
-            </div>
-            <div class="border-t border-border pt-3 space-y-1.5 text-xs text-muted">
-              <p class="flex items-start gap-2">
-                <svg class="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/>
-                </svg>
-                Virement bancaire ou espèces au propriétaire
-              </p>
-              <p class="flex items-start gap-2">
-                <svg class="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/>
-                </svg>
-                Envoyez le justificatif à l'admin
-              </p>
-            </div>
+          <p class="text-sm font-semibold opacity-70 mt-1">MAD / mois</p>
+          <div class="mt-5 pt-4 border-t border-black/10 flex items-center justify-between">
+            <p class="text-[11px] opacity-50">Charges selon contrat</p>
+            <p class="text-[11px] font-bold opacity-60">
+              Acompte · {{ number_format($depositAmount, 0, ',', ' ') }} MAD
+            </p>
           </div>
-
-          {{-- Annulation --}}
-          <form action="{{ route('reservations.cancel', $myReservation) }}" method="POST"
-                onsubmit="return confirm('Annuler cette réservation ?')">
-            @csrf
-            <button type="submit"
-                    class="w-full flex items-center justify-center gap-2 border border-border text-muted hover:border-red-300 hover:text-red-500 font-semibold text-xs py-2.5 rounded-xl transition-colors">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-              </svg>
-              Annuler ma réservation
-            </button>
-          </form>
         </div>
-      @endif
 
-    @elseif($alreadyReserved)
-      {{-- ── Déjà réservé par quelqu'un d'autre ── --}}
-      <div class="border border-border bg-surface rounded-2xl p-5 text-center">
-        <div class="w-10 h-10 bg-white border border-border rounded-full flex items-center justify-center mx-auto mb-3">
-          <svg class="w-5 h-5 text-muted" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/>
+        @auth
+          @if(!$currentUser->is_admin && !$currentUser->role === 'owner')
+          @endif
+
+          @if($currentUser->is_admin)
+            @php
+              $pendingRes = \App\Models\Reservation::where('logement_id', $logement->id)
+                                ->where('status', 'pending')->latest()->first();
+            @endphp
+            @if($pendingRes)
+              <div class="border border-amber-200 bg-amber-50 rounded-2xl p-5">
+                <p class="text-[10px] font-bold text-amber-700 uppercase tracking-widest mb-3">Paiement en attente</p>
+                <div class="flex items-center gap-3 mb-4">
+                  <div class="w-9 h-9 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
+                    <span class="text-amber-700 font-black text-xs">
+                      {{ strtoupper(substr($pendingRes->user->name ?? 'U', 0, 2)) }}
+                    </span>
+                  </div>
+                  <div class="min-w-0">
+                    <p class="text-sm font-bold text-ink truncate">{{ $pendingRes->user->name ?? '–' }}</p>
+                    <p class="text-xs text-muted">Réservé le {{ $pendingRes->created_at->format('d/m/Y') }}</p>
+                  </div>
+                </div>
+                <div class="bg-white rounded-xl p-3 mb-4 border border-amber-100">
+                  <div class="flex justify-between text-xs text-muted mb-1">
+                    <span>Acompte à vérifier</span>
+                    <span class="font-bold text-ink">{{ number_format($pendingRes->deposit_amount, 0, ',', ' ') }} MAD</span>
+                  </div>
+                  <div class="flex justify-between text-xs text-muted">
+                    <span>Loyer total</span>
+                    <span class="font-bold text-ink">{{ number_format($pendingRes->total_price, 0, ',', ' ') }} MAD</span>
+                  </div>
+                </div>
+                <form action="{{ route('reservations.confirmPayment', $pendingRes) }}" method="POST">
+                  @csrf @method('PATCH')
+                  <button type="submit"
+                          class="w-full flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm py-3 rounded-xl transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Confirmer le paiement
+                  </button>
+                </form>
+              </div>
+            @else
+              <div class="border border-border rounded-2xl p-4 bg-surface text-center">
+                <p class="text-xs text-muted font-medium">Aucun paiement en attente</p>
+              </div>
+            @endif
+
+          @elseif($myReservation)
+
+            @if($myReservation->status === 'paid')
+              <div class="border border-emerald-200 bg-emerald-50 rounded-2xl p-5">
+                <div class="flex items-center gap-2 mb-4">
+                  <div class="w-7 h-7 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">
+                    <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+                    </svg>
+                  </div>
+                  <p class="text-sm font-bold text-emerald-700">Réservation confirmée</p>
+                </div>
+                <div class="space-y-2 text-xs mb-4">
+                  <div class="flex justify-between">
+                    <span class="text-muted">Acompte versé</span>
+                    <span class="font-bold text-ink">{{ number_format($myReservation->deposit_amount, 0, ',', ' ') }} MAD</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-muted">Loyer mensuel</span>
+                    <span class="font-bold text-ink">{{ number_format($myReservation->total_price, 0, ',', ' ') }} MAD</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-muted">Confirmé le</span>
+                    <span class="font-bold text-ink">{{ $myReservation->updated_at->format('d/m/Y') }}</span>
+                  </div>
+                </div>
+                @php $hoursElapsed = now()->diffInHours($myReservation->created_at); @endphp
+                <form action="{{ route('reservations.cancel', $myReservation) }}" method="POST"
+                      onsubmit="return confirm('Annuler cette réservation ? Aucun remboursement possible après 24h.')">
+                  @csrf
+                  <button type="submit"
+                          class="w-full flex items-center justify-center gap-2 border border-red-200 text-red-500 hover:bg-red-50 font-semibold text-xs py-2.5 rounded-xl transition-colors">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                    @if($hoursElapsed < 24)
+                      Annuler (remboursement possible)
+                    @else
+                      Annuler (sans remboursement)
+                    @endif
+                  </button>
+                </form>
+              </div>
+
+            @else
+              <div class="border border-border bg-white rounded-2xl p-5 shadow-card">
+                <div class="flex items-center gap-2 mb-4">
+                  <div class="w-7 h-7 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
+                    <svg class="w-3.5 h-3.5 text-amber-600" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                  </div>
+                  <p class="text-sm font-bold text-ink">En attente de confirmation</p>
+                </div>
+
+                <p class="text-xs text-muted leading-relaxed mb-4">
+                  Votre réservation est enregistrée. L'admin va vérifier votre acompte et confirmer sous peu.
+                </p>
+
+                <div class="bg-surface rounded-xl p-4 mb-4 border border-border space-y-3">
+                  <p class="text-[10px] font-bold text-muted uppercase tracking-widest">Instructions de paiement</p>
+                  <div class="flex justify-between text-sm">
+                    <span class="text-muted">Acompte à verser</span>
+                    <span class="font-black text-ink">{{ number_format($myReservation->deposit_amount, 0, ',', ' ') }} MAD</span>
+                  </div>
+                  <div class="border-t border-border pt-3 space-y-1.5 text-xs text-muted">
+                    <p class="flex items-start gap-2">
+                      <svg class="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/>
+                      </svg>
+                      Virement bancaire ou espèces au propriétaire
+                    </p>
+                    <p class="flex items-start gap-2">
+                      <svg class="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/>
+                      </svg>
+                      Envoyez le justificatif à l'admin
+                    </p>
+                  </div>
+                </div>
+
+                <form action="{{ route('reservations.cancel', $myReservation) }}" method="POST"
+                      onsubmit="return confirm('Annuler cette réservation ?')">
+                  @csrf
+                  <button type="submit"
+                          class="w-full flex items-center justify-center gap-2 border border-border text-muted hover:border-red-300 hover:text-red-500 font-semibold text-xs py-2.5 rounded-xl transition-colors">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                    Annuler ma réservation
+                  </button>
+                </form>
+              </div>
+            @endif
+
+          @elseif($alreadyReserved)
+            <div class="border border-border bg-surface rounded-2xl p-5 text-center">
+              <div class="w-10 h-10 bg-white border border-border rounded-full flex items-center justify-center mx-auto mb-3">
+                <svg class="w-5 h-5 text-muted" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/>
+                </svg>
+              </div>
+              <p class="text-sm font-bold text-ink mb-1">Logement non disponible</p>
+              <p class="text-xs text-muted">Ce logement est en cours de réservation.</p>
+            </div>
+
+          @elseif($logement->status === 'available')
+            <div class="border border-border bg-white rounded-2xl p-5 shadow-card">
+              <p class="text-[10px] font-bold text-muted uppercase tracking-widest mb-4">Réserver ce logement</p>
+
+              <div class="bg-surface rounded-xl p-4 mb-4 border border-border">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs text-muted">Loyer mensuel</span>
+                  <span class="text-sm font-bold text-ink">{{ number_format($logement->price, 0, ',', ' ') }} MAD</span>
+                </div>
+                <div class="flex items-center justify-between pt-2 border-t border-border">
+                  <span class="text-xs font-bold text-ink">Acompte (10%)</span>
+                  <span class="text-sm font-black text-primary">{{ number_format($depositAmount, 0, ',', ' ') }} MAD</span>
+                </div>
+              </div>
+
+              <p class="text-[11px] text-muted leading-relaxed mb-4">
+                L'acompte sera à régler manuellement. Votre réservation sera confirmée après vérification par l'admin.
+              </p>
+
+              <form action="{{ route('reservations.store', $logement->id) }}" method="POST"
+                    onsubmit="if(!confirm('Are you sure you want to reserve this property?')) return false; this.querySelector('button').disabled=true;">
+                @csrf
+
+                <button type="submit"
+                        class="bg-primary hover:bg-primary-dark text-white font-semibold px-6 py-3 rounded-xl">
+                  Réserver maintenant
+                </button>
+              </form>
+            </div>
+
+          @else
+            <div class="border border-border bg-surface rounded-2xl p-5 text-center">
+              <p class="text-sm font-bold text-muted">{{ $s['label'] }}</p>
+              <p class="text-xs text-muted mt-1">Ce logement n'est plus disponible à la réservation.</p>
+            </div>
+          @endif
+
+        @else
+          <div class="border border-border bg-white rounded-2xl p-5 shadow-card text-center">
+            <p class="text-sm font-bold text-ink mb-1">Connectez-vous pour réserver</p>
+            <p class="text-xs text-muted mb-4">Un compte est requis pour effectuer une réservation.</p>
+            <a href="{{ route('login') }}"
+               class="inline-flex items-center justify-center gap-2 w-full bg-primary hover:bg-primary-dark text-white font-bold text-sm py-3 rounded-xl transition-colors">
+              Se connecter
+            </a>
+          </div>
+        @endauth
+
+        <a href="tel:{{ $logement->phone }}"
+           class="flex items-center justify-center gap-2.5 w-full bg-ink text-white font-bold text-sm
+                  py-4 rounded-2xl hover:opacity-90 transition-opacity">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/>
           </svg>
-        </div>
-        <p class="text-sm font-bold text-ink mb-1">Logement non disponible</p>
-        <p class="text-xs text-muted">Ce logement est en cours de réservation.</p>
+          {{ $logement->phone }}
+        </a>
+
+        <a href="{{ route('logements.index') }}"
+           class="flex items-center justify-center gap-2 w-full border border-border text-muted font-semibold text-sm
+                  py-4 rounded-2xl hover:border-ink hover:text-ink transition-colors bg-white shadow-card">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/>
+          </svg>
+          Retour aux annonces
+        </a>
+
+        @can('update', $logement)
+          <a href="{{ route('logements.edit', $logement) }}"
+             class="flex items-center justify-center gap-2 w-full border border-border text-ink font-semibold text-sm
+                    py-3 rounded-2xl hover:border-primary hover:text-primary transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/>
+            </svg>
+            Modifier ce logement
+          </a>
+        @endcan
+
       </div>
+    </div>
 
-    @elseif($logement->status === 'available')
-      {{-- ── CTA Réserver ── --}}
-      <div class="border border-border bg-white rounded-2xl p-5 shadow-card">
-        <p class="text-[10px] font-bold text-muted uppercase tracking-widest mb-4">Réserver ce logement</p>
-
-        {{-- Récap acompte --}}
-        <div class="bg-surface rounded-xl p-4 mb-4 border border-border">
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-xs text-muted">Loyer mensuel</span>
-            <span class="text-sm font-bold text-ink">{{ number_format($logement->price, 0, ',', ' ') }} MAD</span>
-          </div>
-          <div class="flex items-center justify-between pt-2 border-t border-border">
-            <span class="text-xs font-bold text-ink">Acompte (10%)</span>
-            <span class="text-sm font-black text-primary">{{ number_format($depositAmount, 0, ',', ' ') }} MAD</span>
-          </div>
-        </div>
-
-        <p class="text-[11px] text-muted leading-relaxed mb-4">
-          L'acompte sera à régler manuellement. Votre réservation sera confirmée après vérification par l'admin.
-        </p>
-
-      <form action="{{ route('reservations.store', $logement->id) }}" method="POST"
-      onsubmit="if(!confirm('Are you sure you want to reserve this property?')) return false; this.querySelector('button').disabled=true;">
-    @csrf
-
-    <button type="submit"
-        class="bg-primary hover:bg-primary-dark text-white font-semibold px-6 py-3 rounded-xl">
-        Réserver maintenant
-    </button>
-</form>
-      </div>
-
-    @else
-      {{-- ── Logement indisponible (loué, vendu…) ── --}}
-      <div class="border border-border bg-surface rounded-2xl p-5 text-center">
-        <p class="text-sm font-bold text-muted">{{ $s['label'] }}</p>
-        <p class="text-xs text-muted mt-1">Ce logement n'est plus disponible à la réservation.</p>
+    {{-- LIGHTBOX --}}
+    @if($photos->count() > 0)
+      <div id="lightbox"
+           class="fixed inset-0 z-[300] bg-black/90 hidden items-center justify-center p-4"
+           onclick="closeLightbox(event)">
+        <button onclick="changePhoto(-1)"
+                class="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-colors">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/>
+          </svg>
+        </button>
+        <img id="lightbox-img" src="" alt="" class="max-w-full max-h-[85vh] rounded-xl object-contain">
+        <button onclick="changePhoto(1)"
+                class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-colors">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/>
+          </svg>
+        </button>
+        <button onclick="document.getElementById('lightbox').classList.add('hidden'); document.getElementById('lightbox').style.display=''; document.body.style.overflow='';"
+                class="absolute top-4 right-4 w-9 h-9 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center">
+          <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+        <p id="lightbox-counter" class="absolute bottom-5 left-1/2 -translate-x-1/2 text-white/50 text-sm"></p>
       </div>
     @endif
 
-  @else
-    {{-- Non connecté --}}
-    <div class="border border-border bg-white rounded-2xl p-5 shadow-card text-center">
-      <p class="text-sm font-bold text-ink mb-1">Connectez-vous pour réserver</p>
-      <p class="text-xs text-muted mb-4">Un compte est requis pour effectuer une réservation.</p>
-      <a href="{{ route('login') }}"
-         class="inline-flex items-center justify-center gap-2 w-full bg-primary hover:bg-primary-dark text-white font-bold text-sm py-3 rounded-xl transition-colors">
-        Se connecter
-      </a>
-    </div>
-  @endauth
-
-  {{-- CTA Téléphone --}}
-  <a href="tel:{{ $logement->phone }}"
-     class="flex items-center justify-center gap-2.5 w-full bg-ink text-white font-bold text-sm
-            py-4 rounded-2xl hover:opacity-90 transition-opacity">
-    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/>
-    </svg>
-    {{ $logement->phone }}
-  </a>
-
-  {{-- Retour aux annonces --}}
-  <a href="{{ route('logements.index') }}"
-     class="flex items-center justify-center gap-2 w-full border border-border text-muted font-semibold text-sm
-            py-4 rounded-2xl hover:border-ink hover:text-ink transition-colors bg-white shadow-card">
-    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/>
-    </svg>
-    Retour aux annonces
-  </a>
-
-  {{-- Modifier sidebar --}}
-  @can('update', $logement)
-    <a href="{{ route('logements.edit', $logement) }}"
-       class="flex items-center justify-center gap-2 w-full border border-border text-ink font-semibold text-sm
-              py-3 rounded-2xl hover:border-primary hover:text-primary transition-colors">
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/>
-      </svg>
-      Modifier ce logement
-    </a>
-  @endcan
-
-</div>
-
-{{-- ══════════════════════════════════
-     LIGHTBOX
-══════════════════════════════════ --}}
-@if($photos->count() > 0)
-  <div id="lightbox"
-       class="fixed inset-0 z-[300] bg-black/90 hidden items-center justify-center p-4"
-       onclick="closeLightbox(event)">
-    <button onclick="changePhoto(-1)"
-            class="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-colors">
-      <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/>
-      </svg>
-    </button>
-    <img id="lightbox-img" src="" alt="" class="max-w-full max-h-[85vh] rounded-xl object-contain">
-    <button onclick="changePhoto(1)"
-            class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-colors">
-      <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/>
-      </svg>
-    </button>
-    <button onclick="document.getElementById('lightbox').classList.add('hidden'); document.getElementById('lightbox').style.display=''; document.body.style.overflow='';"
-            class="absolute top-4 right-4 w-9 h-9 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center">
-      <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-      </svg>
-    </button>
-    <p id="lightbox-counter" class="absolute bottom-5 left-1/2 -translate-x-1/2 text-white/50 text-sm"></p>
   </div>
-@endif
+</div>
 
 @endsection
 
@@ -848,7 +806,6 @@
     if (e.key === 'Escape') { lb.classList.add('hidden'); lb.style.display = ''; document.body.style.overflow = ''; }
   });
 
-  // ── Menu toggle : fermer au clic extérieur ──
   document.addEventListener('click', function(e) {
     document.querySelectorAll('[data-menu]').forEach(function(menu) {
       const trigger = document.querySelector('[data-menu-trigger="' + menu.dataset.menu + '"]');
@@ -866,10 +823,11 @@
     var lat = {{ $logement->latitude }};
     var lng = {{ $logement->longitude }};
 
-    var map = L.map('logement-map', { scrollWheelZoom: false }).setView([lat, lng], 15);
+    var map = L.map('logement-map').setView([lat, lng], 15);
+
     setTimeout(() => {
-    map.invalidateSize();
-}, 100);
+      map.invalidateSize();
+    }, 100);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
@@ -884,10 +842,23 @@
       popupAnchor: [0, -38],
     });
 
-    L.marker([lat, lng], { icon: icon })
-      .addTo(map)
+    var marker = L.marker([lat, lng], {
+      icon: icon,
+      draggable: true
+    }).addTo(map);
+
+    marker
       .bindPopup('<strong>{{ addslashes($logement->title) }}</strong><br>{{ addslashes($logement->city) }}')
       .openPopup();
+
+    map.on('click', function (e) {
+      marker.setLatLng(e.latlng);
+    });
+
+    marker.on('dragend', function () {
+      var position = marker.getLatLng();
+      console.log('Latitude:', position.lat, 'Longitude:', position.lng);
+    });
   })();
 </script>
 @endif

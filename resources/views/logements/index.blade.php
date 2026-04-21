@@ -149,11 +149,12 @@
                 </span>
 
                 {{-- Score --}}
-                <span class="absolute top-3 right-3 text-xs font-semibold px-3 py-1 rounded-full shadow
-                  {{ $logement->score >= 80 ? 'bg-green-500 text-white' : ($logement->score >= 50 ? 'bg-yellow-400 text-white' : 'bg-red-500 text-white') }}">
-                  {{ $logement->score }}%
-                </span>
-
+               @if(Auth::user()->role === 'user' && Auth::user()->lifeProfile)
+  <span class="absolute top-3 right-3 text-xs font-semibold px-3 py-1 rounded-full shadow
+    {{ $logement->score >= 80 ? 'bg-green-500 text-white' : ($logement->score >= 50 ? 'bg-yellow-400 text-white' : 'bg-red-500 text-white') }}">
+    {{ $logement->score }}%
+  </span>
+@endif
                 {{-- Actions hover --}}
                 <div class="absolute bottom-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition">
                   @can('update', $logement)
