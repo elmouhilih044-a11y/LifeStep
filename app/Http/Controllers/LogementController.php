@@ -48,7 +48,7 @@ class LogementController extends Controller
      */
     public function create()
     {
-        $this->authorize('create', Logement::class);
+         $this->authorize('create', \App\Models\Logement::class);
         return view('logements.create');
     }
 

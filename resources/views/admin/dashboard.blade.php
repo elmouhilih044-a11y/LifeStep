@@ -33,15 +33,6 @@
         Logements
       </a>
 
-      <p class="text-[10px] font-bold text-muted uppercase tracking-widest px-3 pt-5 mb-3">Gestion</p>
-
-      <a href="#"
-         class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-ink hover:bg-surface transition-colors">
-        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
-        </svg>
-        Utilisateurs
-      </a>
 
     </nav>
 

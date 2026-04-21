@@ -114,13 +114,15 @@
             </div>
             <h2 class="text-2xl font-bold text-ink">Aucun logement disponible</h2>
             <p class="text-muted mt-2 max-w-xs text-sm">Commencez par ajouter votre premier bien immobilier.</p>
-            <a href="{{ route('logements.create') }}"
-               class="mt-8 inline-flex items-center gap-2 bg-primary hover:bg-primary-dark text-white font-semibold px-6 py-3 rounded-xl transition">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
-              </svg>
-              Ajouter un logement
-            </a>
+          @can('create', App\Models\Logement::class)
+  <a href="{{ route('logements.create') }}"
+     class="mt-8 inline-flex items-center gap-2 bg-primary hover:bg-primary-dark text-white font-semibold px-6 py-3 rounded-xl transition">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+    </svg>
+    Ajouter un logement
+  </a>
+@endcan
           </div>
         @endif
       @else
