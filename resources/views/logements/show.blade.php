@@ -392,20 +392,7 @@
           </div>
         </div>
 
-        {{-- Tags --}}
-        @if($logement->tags->isNotEmpty())
-          <div class="border border-border rounded-2xl p-6 bg-white shadow-card">
-            <p class="text-xs font-bold text-muted uppercase tracking-widest mb-4">Tags · Style de vie</p>
-            <div class="flex flex-wrap gap-2">
-              @foreach($logement->tags as $tag)
-                <span class="text-sm font-semibold px-4 py-1.5 rounded-full bg-primary-light text-primary border border-primary/10">
-                  {{ $tag->name }}
-                </span>
-              @endforeach
-            </div>
-          </div>
-        @endif
-
+      
         {{-- Badges --}}
         @if($logement->badges->isNotEmpty())
           <div class="border border-border rounded-2xl p-6 bg-white shadow-card">

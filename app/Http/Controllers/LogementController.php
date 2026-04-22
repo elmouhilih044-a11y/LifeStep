@@ -16,7 +16,7 @@ class LogementController extends Controller
      */
     public function index(CompatibilityService $compatibilityService, Request $request)
     {
-        $query = Logement::with('tags', 'badges', 'pictures')->whereIn('status', ['available', 'reserved', 'rented']);
+        $query = Logement::with('badges', 'pictures')->whereIn('status', ['available', 'reserved', 'rented']);
         if ($request->filled('q')) {
             $search = $request->q;
 
@@ -60,11 +60,7 @@ class LogementController extends Controller
         $this->authorize('create', Logement::class);
         $logement = Logement::create($request->validated());
 
-        if ($request->has('tags')) {
-            $logement->tags()->sync($request->tags);
-        }
-
-
+      
         if ($request->has('badges')) {
             $logement->badges()->sync($request->badges);
         }
@@ -88,7 +84,7 @@ class LogementController extends Controller
      */
     public function show(Logement $logement, CompatibilityService $compatibilityService)
     {
-        $logement->load('tags', 'badges', 'pictures');
+        $logement->load('badges', 'pictures');
         $user = Auth::user();
      $profile = $user?->role === 'admin' ? null : $user?->lifeProfile;
         $result = $compatibilityService->calculate($profile, $logement);
@@ -114,11 +110,6 @@ class LogementController extends Controller
     {
         $this->authorize('update', $logement);
         $logement->update($request->validated());
-
-        if ($request->has('tags')) {
-            $logement->tags()->sync($request->tags);
-        }
-
 
         if ($request->has('badges')) {
             $logement->badges()->sync($request->badges);
@@ -147,7 +138,6 @@ class LogementController extends Controller
     public function destroy(Logement $logement)
     {
         $this->authorize('delete', $logement);
-        $logement->tags()->detach();
         $logement->badges()->detach();
 
         foreach ($logement->pictures as $picture) {
@@ -187,7 +177,7 @@ public function recommended(CompatibilityService $compatibilityService)
     if (!$lifeProfile) {
         return redirect()->route('life_profiles.create');
     }
-    $logements = Logement::with('tags', 'badges', 'pictures')
+    $logements = Logement::with('badges', 'pictures')
         ->where('status', 'available')
         ->latest()
         ->get();

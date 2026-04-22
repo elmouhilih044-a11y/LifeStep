@@ -115,17 +115,6 @@
                 </p>
               </a>
 
-              {{-- Tags --}}
-              @if($logement->tags->isNotEmpty())
-                <div class="flex flex-wrap gap-1 mb-3">
-                  @foreach($logement->tags->take(3) as $tag)
-                    <span class="text-xs bg-primary-light text-primary font-medium px-2 py-0.5 rounded-full">
-                      {{ $tag->name }}
-                    </span>
-                  @endforeach
-                </div>
-              @endif
-
               {{-- Footer --}}
               <div class="flex items-center justify-between pt-3 border-t border-border">
                 <p class="text-primary font-medium text-sm">
