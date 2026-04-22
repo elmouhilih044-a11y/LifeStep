@@ -22,7 +22,7 @@ return new class extends Migration
         $table->timestamp('start_date')->nullable();
 
         $table->string('status')->default('pending');
-        // pending, paid, cancelled
+        // pending, confirmed, cancelled
 
         $table->timestamp('cancelled_at')->nullable();
         $table->timestamps();

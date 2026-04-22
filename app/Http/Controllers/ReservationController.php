@@ -18,7 +18,7 @@ class ReservationController extends Controller
     public function store(StoreReservationRequest $request, Logement $logement)
     {
         $logementReserved = Reservation::where('logement_id', $logement->id)
-            ->whereIn('status', ['pending', 'paid'])
+            ->whereIn('status', ['pending', 'confirmed'])
             ->exists();
 
         if ($logementReserved) {
@@ -100,8 +100,8 @@ class ReservationController extends Controller
         }
 
         $reservation->update([
-            'payment_status' => 'verified',
-            'status' => 'paid',
+            'payment_status' => 'paid',
+            'status' => 'confirmed',
         ]);
 
         return back()->with('success', 'Paiement confirmé.');
@@ -114,7 +114,7 @@ public function success(Reservation $reservation)
     if ($reservation->payment_status !== 'paid') {
         $reservation->update([
             'payment_status' => 'paid',
-            'status' => 'paid',
+            'status' => 'confirmed',
         ]);
     }
 
