@@ -6,6 +6,7 @@ use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\LifeProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LogementController;
+use App\Http\Controllers\MonthlyPaymentController;
 use App\Http\Controllers\ReservationController;
 
 Route::get('/', function () {
@@ -99,5 +100,16 @@ Route::get('/mes-logements', [LogementController::class, 'mine'])
 Route::get('/mes-recommandations', [LogementController::class, 'recommended'])
     ->name('logements.recommended');
 
-Route::patch('/admin/users/{user}/toggle-ban', [AdminUserController::class, 'toggleBan'])
+Route::patch('/admin/users/{user}/toggle-ban', [AdminController::class, 'toggleBan'])
     ->name('admin.users.toggleBan');
+
+Route::middleware('auth')->group(function () {
+    Route::post('/monthly-payments/{monthlyPayment}/checkout', [MonthlyPaymentController::class, 'checkout'])
+        ->name('monthly-payments.checkout');
+
+    Route::get('/monthly-payments/{monthlyPayment}/success', [MonthlyPaymentController::class, 'success'])
+        ->name('monthly-payments.success');
+
+    Route::get('/monthly-payments/{monthlyPayment}/cancel', [MonthlyPaymentController::class, 'cancel'])
+        ->name('monthly-payments.cancel');
+});

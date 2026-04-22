@@ -27,4 +27,8 @@ public function logement()
 {
     return $this->belongsTo(Logement::class);
 }
+public function monthlyPayments()
+{
+    return $this->hasMany(MonthlyPayment::class);
+}
 }

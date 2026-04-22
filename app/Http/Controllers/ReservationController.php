@@ -8,6 +8,7 @@ use App\Models\Reservation;
 use Illuminate\Support\Facades\Auth;
 use Stripe\Stripe;
 use Stripe\Checkout\Session;
+use App\Models\MonthlyPayment;
 
 class ReservationController extends Controller
 {
@@ -98,21 +99,30 @@ class ReservationController extends Controller
         return back()->with('success', 'Paiement confirmé.');
     }
 
-    public function success(Reservation $reservation)
-    {
-        $this->authorize('cancel', $reservation);
+public function success(Reservation $reservation)
+{
+    $this->authorize('cancel', $reservation);
 
-        if ($reservation->payment_status !== 'paid') {
-            $reservation->update([
-                'payment_status' => 'paid',
-                'status' => 'paid',
-            ]);
-        }
-
-        return redirect()
-            ->route('logements.show', $reservation->logement_id)
-            ->with('success', 'Paiement effectué avec succès.');
+    if ($reservation->payment_status !== 'paid') {
+        $reservation->update([
+            'payment_status' => 'paid',
+            'status' => 'paid',
+        ]);
     }
+
+    if ($reservation->monthlyPayments()->count() === 0) {
+        MonthlyPayment::create([
+            'reservation_id' => $reservation->id,
+            'amount' => $reservation->total_price,
+            'due_date' => now()->addMonth()->toDateString(),
+            'status' => 'pending',
+        ]);
+    }
+
+    return redirect()
+        ->route('logements.show', $reservation->logement_id)
+        ->with('success', 'Paiement effectué avec succès.');
+}
 
     public function cancelCheckout(Reservation $reservation)
     {

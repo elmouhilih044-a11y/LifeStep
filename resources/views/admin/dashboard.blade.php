@@ -4,12 +4,8 @@
 
 @section('content')
 
-{{-- ════════════════════════════════════════════
-     LAYOUT PRINCIPAL — pleine largeur
-════════════════════════════════════════════ --}}
 <div class="pt-20 min-h-screen flex" style="background: #F2F2F2;">
 
-  {{-- ── Sidebar fixe ── --}}
   <aside class="hidden lg:flex flex-col w-56 shrink-0 bg-white border-r border-border sticky top-20 self-start h-[calc(100vh-5rem)]">
 
     <nav class="flex-1 px-3 py-6 space-y-0.5">
@@ -35,7 +31,6 @@
 
     </nav>
 
-    {{-- Bas sidebar --}}
     <div class="px-3 py-4 border-t border-border">
       <form method="POST" action="{{ route('logout') }}">
         @csrf
@@ -50,10 +45,8 @@
 
   </aside>
 
-  {{-- ── Contenu principal ── --}}
   <div class="flex-1 min-w-0 px-8 py-8">
 
-    {{-- En-tête page --}}
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
       <div>
         <h1 class="text-2xl font-black text-ink leading-none">Dashboard</h1>
@@ -65,7 +58,6 @@
       </span>
     </div>
 
-    {{-- ── 4 Stat Cards ── --}}
     <div class="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-5">
 
       <div class="bg-white border border-border rounded-2xl px-6 py-5">
@@ -94,7 +86,6 @@
 
     </div>
 
-    {{-- ── Taux d'occupation ── --}}
     <div class="bg-white border border-border rounded-2xl px-7 py-6 mb-5">
 
       @php
@@ -143,10 +134,8 @@
       </div>
     </div>
 
-    {{-- ── Grille inférieure ── --}}
     <div class="grid grid-cols-1 xl:grid-cols-3 gap-5">
 
-      {{-- Derniers logements (2/3) --}}
       <div class="xl:col-span-2 bg-white border border-border rounded-2xl overflow-hidden">
 
         <div class="flex items-center justify-between px-7 py-4 border-b border-border">
@@ -213,7 +202,6 @@
         @endif
       </div>
 
-      {{-- Derniers membres (1/3) --}}
       <div class="bg-white border border-border rounded-2xl overflow-hidden">
 
         <div class="px-6 py-4 border-b border-border">
@@ -254,15 +242,12 @@
               @endif
 
               @if($u->role !== 'admin')
-                <form action="{{ route('admin.users.toggleBan', $u) }}" method="POST">
+                <form action="{{ route('admin.users.toggleBan', $u) }}" method="POST" class="shrink-0">
                   @csrf
                   @method('PATCH')
 
                   <button type="submit"
-                    class="shrink-0 text-[11px] font-bold px-3 py-1 rounded-lg transition
-                    {{ $u->is_active
-                        ? 'bg-red-50 text-red-600 hover:bg-red-100'
-                        : 'bg-green-50 text-green-600 hover:bg-green-100' }}">
+                    class="text-[11px] font-bold px-3 py-1 rounded-lg transition {{ $u->is_active ? 'bg-red-50 text-red-600 hover:bg-red-100' : 'bg-green-50 text-green-600 hover:bg-green-100' }}">
                     {{ $u->is_active ? 'Bannir' : 'Débannir' }}
                   </button>
                 </form>
@@ -275,12 +260,9 @@
       </div>
 
     </div>
-    {{-- /grille inférieure --}}
 
   </div>
-  {{-- /contenu principal --}}
 
 </div>
-{{-- /layout --}}
 
 @endsection
