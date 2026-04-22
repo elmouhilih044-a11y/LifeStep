@@ -59,8 +59,7 @@ class ReservationController extends Controller
 
         return redirect($session->url);
     }
-
-    public function cancel(Reservation $reservation)
+public function cancel(Reservation $reservation)
 {
     $this->authorize('cancel', $reservation);
 
@@ -80,11 +79,19 @@ class ReservationController extends Controller
             'cancelled_at' => now(),
         ]);
 
+        Logement::where('id', $reservation->logement_id)->update([
+            'status' => 'available'
+        ]);
+
         return back()->with('success', 'Remboursement effectué.');
     } else {
         $reservation->update([
             'status' => 'cancelled',
             'cancelled_at' => now(),
+        ]);
+
+        Logement::where('id', $reservation->logement_id)->update([
+            'status' => 'available'
         ]);
 
         return back()->with('error', 'Annulation tardive. Pas de remboursement.');
@@ -103,6 +110,9 @@ class ReservationController extends Controller
             'payment_status' => 'paid',
             'status' => 'confirmed',
         ]);
+        Logement::where('id', $reservation->logement_id)->update([
+    'status' => 'reserved'
+]);
 
         return back()->with('success', 'Paiement confirmé.');
     }
@@ -116,6 +126,10 @@ public function success(Reservation $reservation)
             'payment_status' => 'paid',
             'status' => 'confirmed',
         ]);
+
+    Logement::where('id', $reservation->logement_id)->update([
+    'status' => 'reserved'
+]);
     }
 
     if ($reservation->monthlyPayments()->count() === 0) {

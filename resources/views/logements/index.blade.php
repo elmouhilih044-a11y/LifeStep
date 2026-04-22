@@ -10,7 +10,7 @@
   <div class="bg-surface border-b border-border px-6 py-10">
     <div class="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
-        <h1 class="text-4xl font-bold text-ink">Logements disponibles</h1>
+        <h1 class="text-4xl font-bold text-ink">Logements</h1>
         @if(Auth::user()?->role !== 'admin')
           <p class="text-muted mt-1">Trouvez le bien adapté à votre profil de vie</p>
         @endif
@@ -129,7 +129,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           @foreach($logements as $logement)
             <a href="{{ route('logements.show', $logement) }}"
-               class="block group rounded-2xl overflow-hidden border border-border shadow-card hover:shadow-card-hover transition-all duration-300">
+               class="block group rounded-2xl overflow-hidden border border-border shadow-card hover:shadow-card-hover transition-all duration-300 {{ $logement->status !== 'available' ? 'opacity-60' : '' }}">
               <div class="relative overflow-hidden">
 
                 {{-- Photo --}}
@@ -146,8 +146,15 @@
                 @endif
 
                 {{-- Badge disponibilité --}}
-                <span class="absolute top-3 left-3 bg-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm {{ $logement->status === 'available' ? 'text-primary' : 'text-muted' }}">
-                  {{ $logement->status === 'available' ? 'Disponible' : 'Indisponible' }}
+                @php
+                  $badgeConfig = match($logement->status) {
+                    'available' => ['text' => 'Disponible',  'class' => 'text-emerald-600 bg-white'],
+                    'reserved'  => ['text' => 'Réservé',     'class' => 'text-amber-600 bg-white'],
+                    default     => ['text' => 'Indisponible','class' => 'text-muted bg-white/80'],
+                  };
+                @endphp
+                <span class="absolute top-3 left-3 text-xs font-bold px-2.5 py-1 rounded-full shadow-sm {{ $badgeConfig['class'] }}">
+                  {{ $badgeConfig['text'] }}
                 </span>
 
                 {{-- Score --}}
@@ -301,8 +308,15 @@
                         </div>
                       @endif
 
-                      <span class="absolute top-3 left-3 bg-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm text-primary">
-                        Disponible
+                      @php
+                        $recBadge = match($logement->status) {
+                          'available' => ['text' => 'Disponible',  'class' => 'text-emerald-600 bg-white'],
+                          'reserved'  => ['text' => 'Réservé',     'class' => 'text-amber-600 bg-white'],
+                          default     => ['text' => 'Indisponible','class' => 'text-muted bg-white/80'],
+                        };
+                      @endphp
+                      <span class="absolute top-3 left-3 text-xs font-bold px-2.5 py-1 rounded-full shadow-sm {{ $recBadge['class'] }}">
+                        {{ $recBadge['text'] }}
                       </span>
 
                       <span class="absolute top-3 right-3 text-xs font-semibold px-3 py-1 rounded-full shadow

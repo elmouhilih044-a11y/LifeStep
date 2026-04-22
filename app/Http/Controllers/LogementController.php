@@ -16,7 +16,7 @@ class LogementController extends Controller
      */
     public function index(CompatibilityService $compatibilityService, Request $request)
     {
-        $query = Logement::with('tags', 'badges', 'pictures')->where('status', 'available');
+        $query = Logement::with('tags', 'badges', 'pictures')->whereIn('status', ['available', 'reserved', 'rented']);
         if ($request->filled('q')) {
             $search = $request->q;
 
