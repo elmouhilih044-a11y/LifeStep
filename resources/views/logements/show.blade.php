@@ -461,6 +461,126 @@
 
         </div>
 
+        {{-- ══════════════════════════════════
+             PAIEMENTS MENSUELS
+        ══════════════════════════════════ --}}
+        @auth
+          @if(isset($myReservation) && $myReservation && $myReservation->status === 'paid')
+            @php
+              $monthlyPayments = $myReservation->monthlyPayments()->orderBy('due_date')->get();
+            @endphp
+            @if($monthlyPayments->isNotEmpty())
+              <div class="border border-border rounded-2xl bg-white shadow-card overflow-hidden">
+
+                {{-- En-tête --}}
+                <div class="flex items-center justify-between px-6 py-4 border-b border-border">
+                  <div>
+                    <p class="text-xs font-bold text-muted uppercase tracking-widest">Paiements mensuels</p>
+                    <p class="text-sm font-semibold text-ink mt-0.5">
+                      {{ $monthlyPayments->where('status', 'paid')->count() }} / {{ $monthlyPayments->count() }} réglés
+                    </p>
+                  </div>
+                  {{-- Barre de progression --}}
+                  @php
+                    $paidCount  = $monthlyPayments->where('status', 'paid')->count();
+                    $totalCount = $monthlyPayments->count();
+                    $progress   = $totalCount > 0 ? round($paidCount / $totalCount * 100) : 0;
+                  @endphp
+                  <div class="w-24">
+                    <div class="flex items-center justify-between text-[10px] text-muted mb-1">
+                      <span>Progression</span>
+                      <span class="font-bold text-ink">{{ $progress }}%</span>
+                    </div>
+                    <div class="h-1.5 bg-surface rounded-full overflow-hidden border border-border">
+                      <div class="h-full bg-primary rounded-full transition-all duration-500"
+                           style="width: {{ $progress }}%"></div>
+                    </div>
+                  </div>
+                </div>
+
+                {{-- Liste des paiements --}}
+                <div class="divide-y divide-border">
+                  @foreach($monthlyPayments as $i => $payment)
+                    @php
+                      $statusConfig = match($payment->status) {
+                        'paid'      => ['bg' => 'bg-emerald-50',  'text' => 'text-emerald-700', 'border' => 'border-emerald-100', 'dot' => 'bg-emerald-500', 'label' => 'Payé'],
+                        'cancelled' => ['bg' => 'bg-red-50',      'text' => 'text-red-500',     'border' => 'border-red-100',     'dot' => 'bg-red-400',    'label' => 'Annulé'],
+                        default     => ['bg' => 'bg-amber-50',    'text' => 'text-amber-700',   'border' => 'border-amber-100',   'dot' => 'bg-amber-400',  'label' => 'En attente'],
+                      };
+                      $isOverdue = $payment->status === 'pending' && \Carbon\Carbon::parse($payment->due_date)->isPast();
+                    @endphp
+
+                    <div class="flex items-center gap-4 px-6 py-4 {{ $payment->status === 'paid' ? 'opacity-75' : '' }}">
+
+                      {{-- Numéro --}}
+                      <div class="w-8 h-8 rounded-full bg-surface border border-border flex items-center justify-center shrink-0">
+                        <span class="text-xs font-bold text-muted">{{ $i + 1 }}</span>
+                      </div>
+
+                      {{-- Infos --}}
+                      <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2 flex-wrap">
+                          <p class="text-sm font-semibold text-ink">
+                            {{ number_format($payment->amount, 0, ',', ' ') }} MAD
+                          </p>
+                          {{-- Badge statut --}}
+                          <span class="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full border
+                            {{ $statusConfig['bg'] }} {{ $statusConfig['text'] }} {{ $statusConfig['border'] }}">
+                            <span class="w-1.5 h-1.5 rounded-full {{ $statusConfig['dot'] }} inline-block"></span>
+                            {{ $statusConfig['label'] }}
+                          </span>
+                          @if($isOverdue)
+                            <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-red-50 text-red-500 border border-red-100">
+                              En retard
+                            </span>
+                          @endif
+                        </div>
+                        <p class="text-xs text-muted mt-0.5 flex items-center gap-1">
+                          <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 9v7.5"/>
+                          </svg>
+                          Échéance : {{ \Carbon\Carbon::parse($payment->due_date)->format('d/m/Y') }}
+                        </p>
+                      </div>
+
+                      {{-- Bouton Payer --}}
+                      @if($payment->status === 'pending')
+                        <form action="{{ route('monthly-payments.checkout', $payment) }}" method="POST" class="shrink-0">
+                          @csrf
+                          <button type="submit"
+                                  class="inline-flex items-center gap-1.5 bg-primary hover:bg-primary-dark text-white font-semibold text-xs px-3.5 py-2 rounded-xl transition-colors whitespace-nowrap">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z"/>
+                            </svg>
+                            Payer
+                          </button>
+                        </form>
+                      @elseif($payment->status === 'paid')
+                        <div class="shrink-0 w-7 h-7 rounded-full bg-emerald-100 flex items-center justify-center">
+                          <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+                          </svg>
+                        </div>
+                      @endif
+
+                    </div>
+                  @endforeach
+                </div>
+
+                {{-- Résumé total --}}
+                <div class="px-6 py-4 bg-surface border-t border-border flex items-center justify-between">
+                  <p class="text-xs text-muted font-medium">Total payé</p>
+                  <p class="text-sm font-bold text-ink">
+                    {{ number_format($monthlyPayments->where('status', 'paid')->sum('amount'), 0, ',', ' ') }} MAD
+                    <span class="text-muted font-normal">/ {{ number_format($monthlyPayments->sum('amount'), 0, ',', ' ') }} MAD</span>
+                  </p>
+                </div>
+
+              </div>
+            @endif
+          @endif
+        @endauth
+
       </div>
 
       {{-- ── Sidebar droite ── --}}
