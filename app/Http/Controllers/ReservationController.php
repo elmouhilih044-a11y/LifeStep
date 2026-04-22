@@ -61,27 +61,35 @@ class ReservationController extends Controller
     }
 
     public function cancel(Reservation $reservation)
-    {
-        $this->authorize('cancel', $reservation);
+{
+    $this->authorize('cancel', $reservation);
 
-        $hours = now()->diffInHours($reservation->start_date);
+    $hours = now()->diffInHours($reservation->start_date);
 
-        if ($hours >= 24) {
-            $reservation->update([
+    foreach ($reservation->monthlyPayments as $payment) {
+        if ($payment->status === 'pending') {
+            $payment->update([
                 'status' => 'cancelled',
-                'cancelled_at' => now(),
             ]);
-
-            return back()->with('success', 'Remboursement effectué.');
-        } else {
-            $reservation->update([
-                'status' => 'cancelled',
-                'cancelled_at' => now(),
-            ]);
-
-            return back()->with('error', 'Annulation tardive. Pas de remboursement.');
         }
     }
+
+    if ($hours >= 24) {
+        $reservation->update([
+            'status' => 'cancelled',
+            'cancelled_at' => now(),
+        ]);
+
+        return back()->with('success', 'Remboursement effectué.');
+    } else {
+        $reservation->update([
+            'status' => 'cancelled',
+            'cancelled_at' => now(),
+        ]);
+
+        return back()->with('error', 'Annulation tardive. Pas de remboursement.');
+    }
+}
 
     public function confirmPayment(Reservation $reservation)
     {
