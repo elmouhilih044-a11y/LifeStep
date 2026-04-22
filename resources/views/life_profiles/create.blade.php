@@ -70,7 +70,7 @@
                 </div>
             </div>
 
-            {{-- 3. Localisation et Type de recherche (Achat/Location) --}}
+            {{-- 3. Localisation et Type de recherche (Location) --}}
             <div class="bg-white rounded-3xl p-8 border border-border shadow-sm">
                 <div class="flex items-center gap-3 mb-6">
                     <div class="bg-primary/10 p-2.5 rounded-xl text-primary">
@@ -84,24 +84,6 @@
                         <label class="text-sm font-bold text-muted ml-1">Dans quelle ville cherchez-vous ?</label>
                         <input type="text" name="location" value="{{ old('location') }}" placeholder="Ex: Casablanca, Paris..." required
                                class="w-full p-4 bg-surface rounded-2xl border border-transparent focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/5 outline-none transition">
-                    </div>
-
-                    <div class="space-y-2">
-                        <label class="text-sm font-bold text-muted ml-1">Que recherchez-vous ?</label>
-                        <div class="grid grid-cols-2 gap-4">
-                            <label class="cursor-pointer">
-                                <input type="radio" name="search_type" value="location" class="peer sr-only" {{ old('search_type', 'location') == 'location' ? 'checked' : '' }} required>
-                                <div class="p-4 text-center border-2 border-border rounded-2xl hover:bg-surface peer-checked:border-primary peer-checked:bg-primary/5 peer-checked:text-primary transition-all">
-                                    <span class="font-bold">Location</span>
-                                </div>
-                            </label>
-                            <label class="cursor-pointer">
-                                <input type="radio" name="search_type" value="achat" class="peer sr-only" {{ old('search_type') == 'achat' ? 'checked' : '' }}>
-                                <div class="p-4 text-center border-2 border-border rounded-2xl hover:bg-surface peer-checked:border-primary peer-checked:bg-primary/5 peer-checked:text-primary transition-all">
-                                    <span class="font-bold">Achat</span>
-                                </div>
-                            </label>
-                        </div>
                     </div>
                 </div>
             </div>

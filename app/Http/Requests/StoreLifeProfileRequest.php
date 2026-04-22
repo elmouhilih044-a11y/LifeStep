@@ -27,7 +27,6 @@ class StoreLifeProfileRequest extends FormRequest
             'budget_min' => ['nullable', 'numeric', 'min:0'],
             'budget_max' => ['nullable', 'numeric', 'min:0', 'gte:budget_min'],
             'location' => ['nullable', 'string', 'max:255'],
-            'search_type' => ['required', 'in:location,achat'],
         ];
     }
 

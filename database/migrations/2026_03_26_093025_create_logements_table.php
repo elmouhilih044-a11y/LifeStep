@@ -22,7 +22,7 @@ return new class extends Migration
     $table->integer('bedrooms');
     $table->decimal('surface', 8, 2);        
     $table->integer('floor')->nullable(); 
-    $table->enum('status', ['available', 'reserved', 'rented', 'sold']);
+    $table->enum('status', ['available', 'reserved', 'rented']);
     $table->text('description')->nullable();
     $table->string('phone', 20);
     $table->foreignId('user_id')->constrained()->onDelete('cascade');

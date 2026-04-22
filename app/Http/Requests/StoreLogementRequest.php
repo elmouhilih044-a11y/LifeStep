@@ -30,7 +30,7 @@ class StoreLogementRequest extends FormRequest
             'city' => 'required|string|max:100',
             'bathrooms' => 'required|integer|min:0',
             'bedrooms' => 'required|integer|min:0',
-            'status' => 'required|in:available,reserved,rented,sold',
+            'status' => 'required|in:available,reserved,rented',
             'description' => 'nullable|string',
             'phone' => 'required|string|max:20',
             'surface' => 'required|numeric|min:0',

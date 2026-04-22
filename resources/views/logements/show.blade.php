@@ -101,7 +101,6 @@
         'available' => ['label' => 'Disponible', 'text' => 'text-primary',   'bg' => 'bg-primary-light'],
         'reserved'  => ['label' => 'Réservé',    'text' => 'text-amber-600', 'bg' => 'bg-amber-50'],
         'rented'    => ['label' => 'Loué',       'text' => 'text-muted',     'bg' => 'bg-surface'],
-        'sold'      => ['label' => 'Vendu',      'text' => 'text-red-600',   'bg' => 'bg-red-50'],
       ];
       $s      = $statusMap[$logement->status] ?? ['label' => ucfirst($logement->status), 'text' => 'text-muted', 'bg' => 'bg-surface'];
       $photos = $logement->pictures->sortBy('order');

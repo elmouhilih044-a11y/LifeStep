@@ -63,13 +63,7 @@
                             <p class="text-lg font-bold text-ink">{{ ucfirst($profil->location) }}</p>
                         </div>
 
-                        {{-- Type de recherche --}}
-                        <div class="p-5 bg-surface rounded-2xl border border-border/50">
-                            <p class="text-xs font-bold text-muted uppercase tracking-wider mb-1">Type de contrat</p>
-                            <p class="text-lg font-bold text-ink">
-                                {{ str_replace('_', ' ', ucfirst($profil->search_type)) }}
-                            </p>
-                        </div>
+
                     </div>
                 </div>
 
