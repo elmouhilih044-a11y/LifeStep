@@ -11,12 +11,12 @@
 
 @section('content')
 
-<div class="pt-20">
+<div>
 
   {{-- ══════════════════════════════════
        PAGE HEADER
   ══════════════════════════════════ --}}
-  <div class="bg-surface border-b border-border px-6 py-8">
+  <div class="bg-surface border-b border-border px-4 sm:px-6 py-6 sm:py-8">
     <div class="max-w-3xl mx-auto flex items-start justify-between gap-4">
       <div>
         <nav class="flex items-center gap-2 text-sm mb-2">
@@ -40,7 +40,7 @@
   </div>
 
 
-  <div class="max-w-3xl mx-auto px-6 py-10">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
 
     {{-- Erreurs de validation --}}
     @if($errors->any())
@@ -351,7 +351,7 @@
 
         <div id="map" class="w-full rounded-xl overflow-hidden border border-border" style="height: 340px;"></div>
 
-        <div class="flex items-center gap-4 mt-4">
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-end gap-3 mt-4">
           <div class="flex-1">
             <label class="block text-xs font-semibold text-muted uppercase tracking-wide mb-1">Latitude</label>
             <input type="text" id="lat-display" class="w-full border border-border rounded-xl px-4 py-2 text-sm text-ink bg-surface" placeholder="cliquez sur la carte…" readonly/>
@@ -361,7 +361,7 @@
             <input type="text" id="lng-display" class="w-full border border-border rounded-xl px-4 py-2 text-sm text-ink bg-surface" placeholder="cliquez sur la carte…" readonly/>
           </div>
           <button type="button" id="reset-map"
-                  class="shrink-0 mt-5 text-xs font-semibold text-muted border border-border px-4 py-2 rounded-xl hover:border-red-300 hover:text-red-400 transition">
+                  class="sm:shrink-0 sm:mt-5 text-xs font-semibold text-muted border border-border px-4 py-2 rounded-xl hover:border-red-300 hover:text-red-400 transition self-start sm:self-auto">
             Effacer
           </button>
         </div>

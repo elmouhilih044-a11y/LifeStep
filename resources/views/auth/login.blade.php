@@ -20,9 +20,9 @@
 @endsection
 
 @section('content')
-<div class="min-h-screen flex pt-20">
+<div class="min-h-screen flex">
 
-  {{-- Left panel – decorative --}}
+  {{-- Left panel – decorative (desktop only) --}}
   <div class="hidden lg:flex lg:w-1/2 auth-bg flex-col justify-center p-14">
     <div>
       <h2 class="text-4xl font-bold text-white leading-tight">
@@ -36,25 +36,31 @@
   </div>
 
   {{-- Right panel – form --}}
-  <div class="w-full lg:w-1/2 flex items-center justify-center px-6 py-16 bg-white">
+  <div class="w-full lg:w-1/2 flex items-start sm:items-center justify-center px-4 sm:px-6 py-8 sm:py-16 bg-white min-h-screen">
     <div class="fade-up w-full max-w-md">
 
-      <div class="mb-8">
+      {{-- Mobile hero text --}}
+      <div class="lg:hidden mb-6 p-5 bg-ink rounded-2xl text-white">
+        <h2 class="text-xl font-bold leading-tight">
+          Des milliers de logements <span class="text-primary">vous attendent.</span>
+        </h2>
+      </div>
+
+      <div class="mb-6 sm:mb-8">
         <p class="text-primary text-xs font-bold tracking-widest uppercase mb-2">Bienvenue</p>
-        <h1 class="text-3xl font-bold text-ink">Connexion</h1>
+        <h1 class="text-2xl sm:text-3xl font-bold text-ink">Connexion</h1>
         <p class="text-muted text-sm mt-2">Pas encore de compte ?
           <a href="{{ route('register') }}" class="text-primary font-semibold hover:text-primary-dark transition">Créer un compte</a>
         </p>
       </div>
 
-      {{-- Erreur globale (email ou mot de passe incorrect) --}}
       @if ($errors->has('error'))
         <div class="mb-5 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm">
           {{ $errors->first('error') }}
         </div>
       @endif
 
-      <form action="{{ route('login.post') }}" method="POST" class="space-y-5">
+      <form action="{{ route('login.post') }}" method="POST" class="space-y-4 sm:space-y-5">
         @csrf
 
         {{-- Email --}}
@@ -104,7 +110,7 @@
       </form>
 
       {{-- Divider --}}
-      <div class="flex items-center gap-4 my-6">
+      <div class="flex items-center gap-4 my-5 sm:my-6">
         <span class="flex-1 h-px bg-border"></span>
         <span class="text-xs text-muted font-medium">ou continuer avec</span>
         <span class="flex-1 h-px bg-border"></span>

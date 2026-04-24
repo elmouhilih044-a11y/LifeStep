@@ -28,11 +28,23 @@
       }
     }
   </script>
+  <style>
+    /* Ajustement du padding-top selon la hauteur de la navbar responsive */
+    @media (max-width: 1023px) {
+      /* Sur mobile, la navbar a une barre de recherche en dessous */
+      body { padding-top: 0; }
+    }
+  </style>
   @yield('styles')
 </head>
 <body class="bg-white text-ink font-body antialiased">
 
   <x-navbar/>
+
+  {{-- Spacer pour compenser la navbar fixe --}}
+  {{-- Sur mobile : navbar (64px) + search bar (~52px) = ~116px --}}
+  {{-- Sur desktop : navbar (80px) --}}
+  <div class="h-[116px] lg:h-20"></div>
 
   <main>
     @yield('content')

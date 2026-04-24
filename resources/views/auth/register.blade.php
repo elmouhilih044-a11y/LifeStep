@@ -20,9 +20,9 @@
 @endsection
 
 @section('content')
-<div class="min-h-screen flex pt-20">
+<div class="min-h-screen flex">
 
-  {{-- Left panel – decorative --}}
+  {{-- Left panel – decorative (desktop only) --}}
   <div class="hidden lg:flex lg:w-1/2 auth-bg flex-col justify-center p-14">
     <div>
       <p class="text-white/40 text-xs font-bold tracking-widest uppercase mb-4">Rejoignez-nous</p>
@@ -33,8 +33,8 @@
       <p class="text-white/60 mt-4 text-base max-w-sm leading-relaxed">
         Créez votre compte gratuitement et accédez à des milliers d'annonces partout au Maroc.
       </p>
-      <div class="flex items-center gap-6 mt-8">
-        @foreach([['Annonces vérifiées', 'M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z'], ['100% gratuit', 'M21 12a9 9 0 11-18 0 9 9 0 0118 0z'], ['Support 7j/7', 'M21 12a9 9 0 11-18 0 9 9 0 0118 0z']] as [$label, $icon])
+      <div class="flex flex-wrap items-center gap-4 mt-8">
+        @foreach([['Annonces vérifiées', 'M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z'], ['100% gratuit', 'M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z'], ['Support 7j/7', 'M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z']] as [$label, $icon])
         <div class="flex items-center gap-2">
           <svg class="w-4 h-4 text-primary shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="{{ $icon }}"/>
@@ -47,18 +47,27 @@
   </div>
 
   {{-- Right panel – form --}}
-  <div class="w-full lg:w-1/2 flex items-center justify-center px-6 py-16 bg-white overflow-y-auto">
+  <div class="w-full lg:w-1/2 flex items-start justify-center px-4 sm:px-6 py-8 sm:py-12 bg-white overflow-y-auto min-h-screen">
     <div class="fade-up w-full max-w-md">
 
-      <div class="mb-8">
+      {{-- Mobile hero --}}
+      <div class="lg:hidden mb-5 p-4 bg-ink rounded-2xl text-white">
+        <h2 class="text-lg font-bold">Votre prochain logement <span class="text-primary">commence ici.</span></h2>
+        <div class="flex items-center gap-4 mt-2 flex-wrap">
+          <span class="text-white/60 text-xs">✓ Annonces vérifiées</span>
+          <span class="text-white/60 text-xs">✓ 100% gratuit</span>
+          <span class="text-white/60 text-xs">✓ Support 7j/7</span>
+        </div>
+      </div>
+
+      <div class="mb-6 sm:mb-8">
         <p class="text-primary text-xs font-bold tracking-widest uppercase mb-2">Inscription</p>
-        <h1 class="text-3xl font-bold text-ink">Créer un compte</h1>
+        <h1 class="text-2xl sm:text-3xl font-bold text-ink">Créer un compte</h1>
         <p class="text-muted text-sm mt-2">Déjà inscrit ?
           <a href="{{ route('login') }}" class="text-primary font-semibold hover:text-primary-dark transition">Se connecter</a>
         </p>
       </div>
 
-      {{-- Erreurs de validation --}}
       @if ($errors->any())
         <div class="mb-5 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm space-y-1">
           @foreach ($errors->all() as $error)
@@ -67,23 +76,21 @@
         </div>
       @endif
 
-      <form action="{{ route('register.post') }}" method="POST" class="space-y-5">
+      <form action="{{ route('register.post') }}" method="POST" class="space-y-4 sm:space-y-5">
         @csrf
-
-        {{-- Champ name caché – combiné automatiquement depuis prenom + nom --}}
         <input type="hidden" name="name" id="name" value="{{ old('name', trim(old('prenom') . ' ' . old('nom'))) }}"/>
 
         {{-- Name row --}}
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-2 gap-3 sm:gap-4">
           <div>
             <label class="block text-sm font-semibold text-ink mb-1.5">Prénom</label>
             <input type="text" id="prenom" name="prenom" value="{{ old('prenom') }}" placeholder="Hajar" required
-                   class="w-full px-4 py-3 border border-border rounded-xl text-sm text-ink placeholder-muted outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition"/>
+                   class="w-full px-3 sm:px-4 py-3 border border-border rounded-xl text-sm text-ink placeholder-muted outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition"/>
           </div>
           <div>
             <label class="block text-sm font-semibold text-ink mb-1.5">Nom</label>
             <input type="text" id="nom" name="nom" value="{{ old('nom') }}" placeholder="Dupont" required
-                   class="w-full px-4 py-3 border border-border rounded-xl text-sm text-ink placeholder-muted outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition"/>
+                   class="w-full px-3 sm:px-4 py-3 border border-border rounded-xl text-sm text-ink placeholder-muted outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition"/>
           </div>
         </div>
 
@@ -119,18 +126,18 @@
         <div>
           <label class="block text-sm font-semibold text-ink mb-2">Je suis</label>
           <div class="grid grid-cols-2 gap-3">
-            <label class="flex items-center gap-3 border border-border rounded-xl px-4 py-3 cursor-pointer hover:border-primary transition has-[:checked]:border-primary has-[:checked]:bg-primary-light">
-              <input type="radio" name="role" value="user" {{ old('role', 'user') === 'user' ? 'checked' : '' }} class="accent-primary"/>
+            <label class="flex items-center gap-2 sm:gap-3 border border-border rounded-xl px-3 sm:px-4 py-3 cursor-pointer hover:border-primary transition has-[:checked]:border-primary has-[:checked]:bg-primary-light">
+              <input type="radio" name="role" value="user" {{ old('role', 'user') === 'user' ? 'checked' : '' }} class="accent-primary shrink-0"/>
               <div>
-                <p class="text-sm font-semibold text-ink">Locataire</p>
-                <p class="text-xs text-muted">Je cherche un logement</p>
+                <p class="text-xs sm:text-sm font-semibold text-ink">Locataire</p>
+                <p class="text-xs text-muted hidden sm:block">Je cherche un logement</p>
               </div>
             </label>
-            <label class="flex items-center gap-3 border border-border rounded-xl px-4 py-3 cursor-pointer hover:border-primary transition has-[:checked]:border-primary has-[:checked]:bg-primary-light">
-              <input type="radio" name="role" value="owner" {{ old('role') === 'owner' ? 'checked' : '' }} class="accent-primary"/>
+            <label class="flex items-center gap-2 sm:gap-3 border border-border rounded-xl px-3 sm:px-4 py-3 cursor-pointer hover:border-primary transition has-[:checked]:border-primary has-[:checked]:bg-primary-light">
+              <input type="radio" name="role" value="owner" {{ old('role') === 'owner' ? 'checked' : '' }} class="accent-primary shrink-0"/>
               <div>
-                <p class="text-sm font-semibold text-ink">Propriétaire</p>
-                <p class="text-xs text-muted">Je publie des annonces</p>
+                <p class="text-xs sm:text-sm font-semibold text-ink">Propriétaire</p>
+                <p class="text-xs text-muted hidden sm:block">Je publie des annonces</p>
               </div>
             </label>
           </div>
@@ -167,8 +174,8 @@
         {{-- Terms --}}
         <div class="flex items-start gap-2">
           <input type="checkbox" id="terms" name="terms" required
-                 class="w-4 h-4 mt-0.5 rounded border-border accent-primary cursor-pointer"/>
-          <label for="terms" class="text-sm text-muted cursor-pointer leading-relaxed">
+                 class="w-4 h-4 mt-0.5 rounded border-border accent-primary cursor-pointer shrink-0"/>
+          <label for="terms" class="text-xs sm:text-sm text-muted cursor-pointer leading-relaxed">
             J'accepte les <a href="#" class="text-primary font-semibold hover:text-primary-dark transition">conditions d'utilisation</a>
             et la <a href="#" class="text-primary font-semibold hover:text-primary-dark transition">politique de confidentialité</a>
           </label>
@@ -183,7 +190,7 @@
       </form>
 
       {{-- Divider --}}
-      <div class="flex items-center gap-4 my-6">
+      <div class="flex items-center gap-4 my-5 sm:my-6">
         <span class="flex-1 h-px bg-border"></span>
         <span class="text-xs text-muted font-medium">ou continuer avec</span>
         <span class="flex-1 h-px bg-border"></span>
@@ -218,15 +225,11 @@
     var prenom = document.getElementById('prenom');
     var nom    = document.getElementById('nom');
     var name   = document.getElementById('name');
-
     function updateName() {
       name.value = (prenom.value.trim() + ' ' + nom.value.trim()).trim();
     }
-
     prenom.addEventListener('input', updateName);
     nom.addEventListener('input', updateName);
-
-    // Init on page load (handles old() values)
     updateName();
   })();
 </script>

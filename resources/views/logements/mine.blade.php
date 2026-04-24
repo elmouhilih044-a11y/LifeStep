@@ -11,18 +11,18 @@
 @endsection
 
 @section('content')
-<div class="mine-font pt-28 pb-20 px-6">
+<div class="mine-font py-6 sm:py-10 px-4 sm:px-6">
   <div class="max-w-6xl mx-auto">
 
     {{-- ── Header ── --}}
-    <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8">
+    <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6 sm:mb-8">
       <div>
-        <h1 class="mine-serif text-4xl font-normal text-ink leading-tight">Mes logements</h1>
+        <h1 class="mine-serif text-3xl sm:text-4xl font-normal text-ink leading-tight">Mes logements</h1>
         <p class="text-muted text-sm mt-1">Gérez vos biens publiés sur LifeStep+</p>
       </div>
       @can('create', App\Models\Logement::class)
         <a href="{{ route('logements.create') }}"
-           class="inline-flex items-center gap-2 bg-primary hover:bg-primary-dark text-white font-medium text-sm px-5 py-2.5 rounded-xl transition shrink-0">
+           class="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white font-medium text-sm px-5 py-2.5 rounded-xl transition shrink-0 w-full sm:w-auto">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
           </svg>
@@ -34,7 +34,7 @@
     @if($logements->isEmpty())
 
       {{-- ── Empty state ── --}}
-      <div class="border border-border rounded-2xl p-16 text-center">
+      <div class="border border-border rounded-2xl p-10 sm:p-16 text-center">
         <div class="w-14 h-14 bg-primary-light rounded-full flex items-center justify-center mx-auto mb-5">
           <svg class="w-7 h-7 text-primary" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955a1.5 1.5 0 012.092 0L22.25 12M4.5 9.75v10.125A1.125 1.125 0 005.625 21h4.5a1.125 1.125 0 001.125-1.125V15a1.125 1.125 0 011.125-1.125h2.25A1.125 1.125 0 0115.75 15v4.875A1.125 1.125 0 0016.875 21h4.5a1.125 1.125 0 001.125-1.125V9.75"/>
@@ -56,26 +56,26 @@
     @else
 
       {{-- ── Stats bar ── --}}
-      <div class="grid grid-cols-3 gap-3 mb-8">
-        <div class="bg-surface rounded-xl px-4 py-3">
+      <div class="grid grid-cols-3 gap-2 sm:gap-3 mb-6 sm:mb-8">
+        <div class="bg-surface rounded-xl px-3 sm:px-4 py-3">
           <p class="text-xs font-medium text-muted uppercase tracking-wide">Total</p>
-          <p class="text-2xl font-medium text-ink mt-1">{{ $logements->count() }}</p>
+          <p class="text-xl sm:text-2xl font-medium text-ink mt-1">{{ $logements->count() }}</p>
         </div>
-        <div class="bg-surface rounded-xl px-4 py-3">
+        <div class="bg-surface rounded-xl px-3 sm:px-4 py-3">
           <p class="text-xs font-medium text-muted uppercase tracking-wide">Disponibles</p>
-          <p class="text-2xl font-medium text-primary mt-1">{{ $logements->where('status', 'available')->count() }}</p>
+          <p class="text-xl sm:text-2xl font-medium text-primary mt-1">{{ $logements->where('status', 'available')->count() }}</p>
         </div>
-        <div class="bg-surface rounded-xl px-4 py-3">
+        <div class="bg-surface rounded-xl px-3 sm:px-4 py-3">
           <p class="text-xs font-medium text-muted uppercase tracking-wide">Prix moy.</p>
-          <p class="text-2xl font-medium text-ink mt-1">
+          <p class="text-xl sm:text-2xl font-medium text-ink mt-1">
             {{ $logements->avg('price') ? number_format($logements->avg('price'), 0, ',', ' ') : '–' }}
-            <span class="text-sm font-normal text-muted">MAD</span>
+            <span class="text-xs font-normal text-muted">MAD</span>
           </p>
         </div>
       </div>
 
       {{-- ── Grid ── --}}
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
         @foreach($logements as $logement)
           <div class="group bg-white border border-border rounded-2xl overflow-hidden transition-all duration-200 hover:border-gray-300 {{ $logement->status !== 'available' ? 'opacity-75' : '' }}">
 
@@ -84,16 +84,15 @@
               @if($logement->pictures->isNotEmpty())
                 <img src="{{ asset('storage/' . $logement->pictures->sortBy('order')->first()->path) }}"
                      alt="{{ $logement->title }}"
-                     class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500"/>
+                     class="w-full h-44 sm:h-48 object-cover group-hover:scale-105 transition-transform duration-500"/>
               @else
-                <div class="w-full h-48 bg-surface flex items-center justify-center">
+                <div class="w-full h-44 sm:h-48 bg-surface flex items-center justify-center">
                   <svg class="w-12 h-12 text-border" fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955a1.5 1.5 0 012.092 0L22.25 12M4.5 9.75v10.125A1.125 1.125 0 005.625 21h4.5a1.125 1.125 0 001.125-1.125V15a1.125 1.125 0 011.125-1.125h2.25A1.125 1.125 0 0115.75 15v4.875A1.125 1.125 0 0016.875 21h4.5a1.125 1.125 0 001.125-1.125V9.75"/>
                   </svg>
                 </div>
               @endif
 
-              {{-- Status badge --}}
               <span class="absolute top-3 left-3 text-xs font-medium px-2.5 py-1 rounded-full
                 {{ $logement->status === 'available'
                    ? 'bg-white/90 text-emerald-600'

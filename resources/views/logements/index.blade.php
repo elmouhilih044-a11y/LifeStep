@@ -4,13 +4,13 @@
 
 @section('content')
 
-<div class="pt-20">
+<div>
 
   {{-- ── Page Header ── --}}
-  <div class="bg-surface border-b border-border px-6 py-10">
+  <div class="bg-surface border-b border-border px-4 sm:px-6 py-7 sm:py-10">
     <div class="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
-        <h1 class="text-4xl font-bold text-ink">Logements</h1>
+        <h1 class="text-2xl sm:text-4xl font-bold text-ink">Logements</h1>
         @if(Auth::user()?->role !== 'admin')
           <p class="text-muted mt-1">Trouvez le bien adapté à votre profil de vie</p>
         @endif
@@ -30,7 +30,7 @@
     </div>
   </div>
 
-  <div class="max-w-7xl mx-auto px-6 py-10">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
 
     {{-- Flash success --}}
     @if(session('success'))
@@ -46,22 +46,22 @@
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
       <div class="border border-border rounded-2xl p-5 bg-white shadow-card">
         <p class="text-xs font-bold text-primary uppercase tracking-wide">Total Annonces</p>
-        <p class="text-3xl font-bold mt-2 text-ink">{{ $logements->count() }}</p>
+        <p class="text-2xl sm:text-3xl font-bold mt-2 text-ink">{{ $logements->count() }}</p>
         <p class="text-muted text-sm mt-1">publiées</p>
       </div>
       <div class="border border-border rounded-2xl p-5 bg-white shadow-card">
         <p class="text-xs font-bold text-primary uppercase tracking-wide">Disponibles</p>
-        <p class="text-3xl font-bold mt-2 text-ink">{{ $logements->where('status', 'available')->count() }}</p>
+        <p class="text-2xl sm:text-3xl font-bold mt-2 text-ink">{{ $logements->where('status', 'available')->count() }}</p>
         <p class="text-muted text-sm mt-1">prêts à louer</p>
       </div>
       <div class="border border-border rounded-2xl p-5 bg-white shadow-card">
         <p class="text-xs font-bold text-primary uppercase tracking-wide">Avec Photos</p>
-        <p class="text-3xl font-bold mt-2 text-ink">{{ $logements->filter(fn($l) => $l->pictures->isNotEmpty())->count() }}</p>
+        <p class="text-2xl sm:text-3xl font-bold mt-2 text-ink">{{ $logements->filter(fn($l) => $l->pictures->isNotEmpty())->count() }}</p>
         <p class="text-muted text-sm mt-1">illustrés</p>
       </div>
       <div class="border border-border rounded-2xl p-5 bg-white shadow-card">
         <p class="text-xs font-bold text-primary uppercase tracking-wide">Prix Moyen</p>
-        <p class="text-3xl font-bold mt-2 text-ink">
+        <p class="text-2xl sm:text-3xl font-bold mt-2 text-ink">
           {{ $logements->avg('price') ? number_format($logements->avg('price'), 0, ',', ' ') . ' €' : '–' }}
         </p>
         <p class="text-muted text-sm mt-1">par mois</p>
@@ -71,7 +71,7 @@
     {{-- ── Onglets (uniquement pour les users) ── --}}
     @auth
       @if(Auth::user()->role === 'user')
-        <div class="flex gap-1 mb-8 border-b border-border">
+        <div class="flex gap-1 mb-8 border-b border-border overflow-x-auto scrollbar-none">
           <button onclick="switchTab('all')" id="tab-all"
                   class="px-5 py-3 text-sm font-semibold border-b-2 border-primary text-primary transition -mb-px">
             Tous les logements
@@ -129,7 +129,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           @foreach($logements as $logement)
             <a href="{{ route('logements.show', $logement) }}"
-               class="block group rounded-2xl overflow-hidden border border-border shadow-card hover:shadow-card-hover transition-all duration-300 {{ $logement->status !== 'available' ? 'opacity-60' : '' }}">
+               class="block group rounded-2xl overflow-hidden border border-border shadow-card hover:shadow-card-hover transition-all duration-300 ">
               <div class="relative overflow-hidden">
 
                 {{-- Photo --}}
@@ -165,7 +165,7 @@
   </span>
 @endif
                 {{-- Actions hover --}}
-                <div class="absolute bottom-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition">
+                <div class="absolute bottom-3 right-3 flex gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition">
                   @can('update', $logement)
                     <a href="{{ route('logements.edit', $logement) }}"
                        class="bg-white rounded-full p-1.5 shadow hover:bg-surface transition">
@@ -205,15 +205,7 @@
                   </svg>
                   {{ $logement->city }}
                 </p>
-                @if($logement->tags->isNotEmpty())
-                  <div class="flex flex-wrap gap-1 mt-3">
-                    @foreach($logement->tags->take(3) as $tag)
-                      <span class="text-xs bg-primary-light text-primary font-medium px-2 py-0.5 rounded-full">
-                        {{ $tag->name }}
-                      </span>
-                    @endforeach
-                  </div>
-                @endif
+            
                 <div class="flex items-center gap-3 mt-3 text-xs text-muted border-t border-border pt-3">
                   <span>{{ $logement->rooms }} ch.</span>
                   <span class="text-border">·</span>
@@ -340,15 +332,6 @@
                         {{ $logement->city }}
                       </p>
 
-                      @if($logement->tags->isNotEmpty())
-                        <div class="flex flex-wrap gap-1 mt-3">
-                          @foreach($logement->tags->take(3) as $tag)
-                            <span class="text-xs bg-primary-light text-primary font-medium px-2 py-0.5 rounded-full">
-                              {{ $tag->name }}
-                            </span>
-                          @endforeach
-                        </div>
-                      @endif
 
                       {{-- Barre de compatibilité --}}
                       <div class="mt-3">

@@ -8,13 +8,13 @@
 
 @section('content')
 
-<div class="pt-20">
+<div>
 
   {{-- ══════════════════════════════════
        PAGE HEADER / BREADCRUMB
   ══════════════════════════════════ --}}
-  <div class="bg-surface border-b border-border px-6 py-8">
-    <div class="max-w-6xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+  <div class="bg-surface border-b border-border px-4 sm:px-6 py-6 sm:py-8">
+    <div class="max-w-6xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
 
       {{-- Breadcrumb --}}
       <nav class="flex items-center gap-2 text-sm min-w-0">
@@ -29,7 +29,7 @@
       </nav>
 
       {{-- Actions selon autorisation --}}
-      <div class="flex items-center gap-2 shrink-0">
+      <div class="flex flex-wrap items-center gap-2">
 
         {{-- Favori : tout utilisateur connecté --}}
         @auth
@@ -94,7 +94,7 @@
   </div>
 
 
-  <div class="max-w-6xl mx-auto px-6 py-10">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
 
     @php
       $statusMap = [
@@ -149,10 +149,11 @@
     ══════════════════════════════════ --}}
     <div class="mb-10">
       @if($photos->count() > 0)
-        <div class="grid gap-2 rounded-2xl overflow-hidden"
-             style="grid-template-columns: {{ $photos->count() >= 2 ? '2fr 1fr' : '1fr' }}; max-height: 440px;">
+        <div class="grid gap-2 rounded-2xl overflow-hidden
+                     {{ $photos->count() >= 2 ? 'grid-cols-1 sm:grid-cols-[2fr_1fr]' : 'grid-cols-1' }}"
+             style="max-height: 440px;">
 
-          <div class="{{ $photos->count() >= 2 ? 'row-span-2' : '' }} overflow-hidden cursor-pointer"
+          <div class="{{ $photos->count() >= 2 ? 'sm:row-span-2' : '' }} overflow-hidden cursor-pointer"
                onclick="openGallery(0)">
             <img src="{{ asset('storage/' . $photos->first()->path) }}"
                  alt="{{ $logement->title }}"
@@ -161,7 +162,7 @@
           </div>
 
           @foreach($photos->skip(1)->take(2) as $i => $pic)
-            <div class="overflow-hidden cursor-pointer" onclick="openGallery({{ $i + 1 }})">
+            <div class="hidden sm:block overflow-hidden cursor-pointer" onclick="openGallery({{ $i + 1 }})">
               <img src="{{ asset('storage/' . $pic->path) }}"
                    alt="Photo {{ $i + 2 }}"
                    class="w-full h-full object-cover hover:scale-[1.02] transition-transform duration-300"
@@ -355,7 +356,7 @@
       </div>
     @endif
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-7">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-7">
 
       {{-- ── Colonne gauche ── --}}
       <div class="lg:col-span-2 space-y-5">
@@ -570,7 +571,7 @@
       </div>
 
       {{-- ── Sidebar droite ── --}}
-      <div class="space-y-4">
+      <div class="space-y-4 lg:sticky lg:top-24 lg:self-start">
 
         @if(session('success'))
           <div class="flex items-start gap-3 bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm font-medium px-4 py-3 rounded-xl">
