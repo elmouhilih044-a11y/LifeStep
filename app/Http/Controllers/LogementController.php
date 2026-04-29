@@ -16,7 +16,7 @@ class LogementController extends Controller
      */
     public function index(CompatibilityService $compatibilityService, Request $request)
     {
-        $query = Logement::with('badges', 'pictures')->whereIn('status', ['available', 'reserved', 'rented']);
+        $query = Logement::with('pictures')->whereIn('status', ['available', 'reserved', 'rented']);
         if ($request->filled('q')) {
             $search = $request->q;
 
@@ -60,11 +60,6 @@ class LogementController extends Controller
         $this->authorize('create', Logement::class);
         $logement = Logement::create($request->validated());
 
-      
-        if ($request->has('badges')) {
-            $logement->badges()->sync($request->badges);
-        }
-
         if ($request->hasFile('pictures')) {
             foreach ($request->file('pictures') as $index => $file) {
                 $path = $file->store('logements', 'public');
@@ -84,7 +79,7 @@ class LogementController extends Controller
      */
     public function show(Logement $logement, CompatibilityService $compatibilityService)
     {
-        $logement->load('badges', 'pictures');
+        $logement->load('pictures');
         $user = Auth::user();
      $profile = $user?->role === 'admin' ? null : $user?->lifeProfile;
         $result = $compatibilityService->calculate($profile, $logement);
@@ -111,9 +106,7 @@ class LogementController extends Controller
         $this->authorize('update', $logement);
         $logement->update($request->validated());
 
-        if ($request->has('badges')) {
-            $logement->badges()->sync($request->badges);
-        }
+
 
         if ($request->hasFile('pictures')) {
             foreach ($request->file('pictures') as $index => $file) {
@@ -138,7 +131,7 @@ class LogementController extends Controller
     public function destroy(Logement $logement)
     {
         $this->authorize('delete', $logement);
-        $logement->badges()->detach();
+    
 
         foreach ($logement->pictures as $picture) {
             $picture->delete();
@@ -177,7 +170,7 @@ public function recommended(CompatibilityService $compatibilityService)
     if (!$lifeProfile) {
         return redirect()->route('life_profiles.create');
     }
-    $logements = Logement::with('badges', 'pictures')
+    $logements = Logement::with( 'pictures')
         ->where('status', 'available')
         ->latest()
         ->get();

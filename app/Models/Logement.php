@@ -35,10 +35,6 @@ class Logement extends Model
         return $this->hasMany(Picture::class);
     }
 
-    public function badges()
-    {
-        return $this->belongsToMany(Badge::class, 'logement_badge');
-    }
     public function compatibilities()
     {
         return $this->hasMany(Compatibility::class);

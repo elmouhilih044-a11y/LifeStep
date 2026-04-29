@@ -36,7 +36,7 @@ class ReservationController extends Controller
             'payment_method' => 'stripe',
             'payment_status' => 'pending',
             'status' => 'pending',
-            'start_date' => now(),
+            'start_date' => $request->start_date,
         ]);
 
         Stripe::setApiKey(config('services.stripe.secret'));
@@ -63,7 +63,14 @@ public function cancel(Reservation $reservation)
 {
     $this->authorize('cancel', $reservation);
 
-    $hours = now()->diffInHours($reservation->start_date);
+    $now = now();
+    $startDate = $reservation->start_date;
+
+    if ($startDate->isPast()) {
+        return back()->with('error', 'Impossible d’annuler une réservation déjà commencée.');
+    }
+
+    $hours = $startDate->diffInRealHours($now);
 
     foreach ($reservation->monthlyPayments as $payment) {
         if ($payment->status === 'pending') {
@@ -73,29 +80,20 @@ public function cancel(Reservation $reservation)
         }
     }
 
-    if ($hours >= 24) {
-        $reservation->update([
-            'status' => 'cancelled',
-            'cancelled_at' => now(),
-        ]);
+    $reservation->update([
+        'status' => 'cancelled',
+        'cancelled_at' => $now,
+    ]);
 
-        Logement::where('id', $reservation->logement_id)->update([
-            'status' => 'available'
-        ]);
+    Logement::where('id', $reservation->logement_id)->update([
+        'status' => 'available'
+    ]);
 
+    if ($hours < 24) {
         return back()->with('success', 'Remboursement effectué.');
-    } else {
-        $reservation->update([
-            'status' => 'cancelled',
-            'cancelled_at' => now(),
-        ]);
-
-        Logement::where('id', $reservation->logement_id)->update([
-            'status' => 'available'
-        ]);
-
-        return back()->with('error', 'Annulation tardive. Pas de remboursement.');
     }
+
+    return back()->with('error', 'Annulation effectuée. Pas de remboursement.');
 }
 
     public function confirmPayment(Reservation $reservation)
@@ -135,7 +133,7 @@ public function success(Reservation $reservation)
     if ($reservation->monthlyPayments()->count() === 0) {
         MonthlyPayment::create([
             'reservation_id' => $reservation->id,
-            'amount' => $reservation->total_price,
+           'amount' => $reservation->total_price - $reservation->deposit_amount,
             'due_date' => now()->addMonth()->toDateString(),
             'status' => 'pending',
         ]);

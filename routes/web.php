@@ -98,7 +98,7 @@ Route::get('/mes-logements', [LogementController::class, 'mine'])
     ->middleware('auth');
    
 Route::get('/mes-recommandations', [LogementController::class, 'recommended'])
-    ->name('logements.recommended');
+    ->name('logements.recommended')->middleware('auth');
 
 Route::patch('/admin/users/{user}/toggle-ban', [AdminController::class, 'toggleBan'])
     ->name('admin.users.toggleBan');

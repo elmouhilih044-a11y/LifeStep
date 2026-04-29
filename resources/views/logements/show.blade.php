@@ -393,20 +393,7 @@
           </div>
         </div>
 
-      
-        {{-- Badges --}}
-        @if($logement->badges->isNotEmpty())
-          <div class="border border-border rounded-2xl p-6 bg-white shadow-card">
-            <p class="text-xs font-bold text-muted uppercase tracking-widest mb-4">Avantages · Badges</p>
-            <div class="flex flex-wrap gap-2">
-              @foreach($logement->badges as $badge)
-                <span class="inline-flex items-center gap-1.5 text-sm font-bold px-4 py-1.5 rounded-full bg-red-50 text-red-500 border border-red-100">
-                  ✦ {{ $badge->name }}
-                </span>
-              @endforeach
-            </div>
-          </div>
-        @endif
+    
 
         {{-- ── Carte Leaflet ── --}}
         @if(!is_null($logement->latitude) && !is_null($logement->longitude))

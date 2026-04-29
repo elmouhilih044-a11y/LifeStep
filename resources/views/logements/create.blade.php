@@ -134,7 +134,7 @@
                 <option value="available" {{ old('status','available') === 'available' ? 'selected' : '' }}>Disponible</option>
                 <option value="reserved"  {{ old('status') === 'reserved'  ? 'selected' : '' }}>Réservé</option>
                 <option value="rented"    {{ old('status') === 'rented'    ? 'selected' : '' }}>Loué</option>
-                <option value="sold"      {{ old('status') === 'sold'      ? 'selected' : '' }}>Vendu</option>
+
               </select>
               <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted pointer-events-none"
                    fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
