@@ -5,11 +5,18 @@ namespace App\Http\Controllers;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use Illuminate\Http\Request;
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use App\Services\AuthService;
 
 class AuthController extends Controller
 {
+    protected $authService;
+
+    public function __construct(AuthService $authService)
+    {
+        $this->authService = $authService;
+    }
+
     public function showRegister()
     {
         return view('auth.register');
@@ -18,20 +25,12 @@ class AuthController extends Controller
     public function register(RegisterRequest $request)
     {
         $data = $request->validated();
-        $user = User::create($data);
 
-        Auth::login($user);
+        $user = $this->authService->register($data);
+
         $request->session()->regenerate();
 
-        if ($user->role === 'admin') {
-            return redirect()->route('admin.dashboard');
-        }
-
-        if ($user->role === 'owner') {
-            return redirect()->route('logements.index');
-        }
-
-        return redirect()->route('life_profiles.create');
+        return $this->authService->redirectAfterRegister($user);
     }
 
     public function showLogin()
@@ -39,48 +38,27 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
-   public function login(LoginRequest $request)
-{
-    $data = $request->validated();
+    public function login(LoginRequest $request)
+    {
+        $data = $request->validated();
 
-    if (Auth::attempt($data)) {
-        $request->session()->regenerate();
-        $user = Auth::user();
+        $result = $this->authService->login($data);
 
-      
-        if (!$user->is_active) {
-            Auth::logout();
-
+        if (!$result['success']) {
             return back()->withErrors([
-                'error' => 'Votre compte a été désactivé.'
+                'error' => $result['message']
             ]);
         }
 
-    
-        if ($user->role === 'admin') {
-            return redirect()->route('admin.dashboard');
-        }
+        $request->session()->regenerate();
 
-     
-        if ($user->role === 'owner') {
-            return redirect()->route('logements.index');
-        }
-
-        if (!$user->lifeProfile) {
-            return redirect()->route('life_profiles.create');
-        }
-
-        return redirect()->route('logements.index');
+        return $this->authService->redirectAfterAuth($result['user']);
     }
 
-    
-    return back()->withErrors([
-        'error' => 'Email ou mot de passe incorrect'
-    ]);
-}
     public function logout(Request $request)
     {
         Auth::logout();
+
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 

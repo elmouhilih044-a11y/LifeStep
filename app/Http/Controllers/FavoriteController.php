@@ -2,44 +2,35 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use App\Models\Favorite;
+use App\Services\FavoriteService;
 
 class FavoriteController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    protected $favoriteService;
+
+    public function __construct(FavoriteService $favoriteService)
     {
-        $user=Auth::user();
-        $favorites=$user->favorites;
-        return view('favorites.index',compact('favorites'));
+        $this->favoriteService = $favoriteService;
     }
 
-  
-    /**
-     * Store a newly created resource in storage.
-     */
+    public function index()
+    {
+        $favorites = $this->favoriteService->getUserFavorites();
+
+        return view('favorites.index', compact('favorites'));
+    }
+
     public function store($logementId)
     {
-        $user=Auth::user();
-        $user->favorites()->syncWithoutDetaching([$logementId]);
+        $this->favoriteService->addToFavorites($logementId);
+
         return back()->with('success', 'Ajouté aux favoris');
     }
 
- 
-
- 
-
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy($logementId)
     {
-        $user=Auth::user();
-       $user->favorites()->detach($logementId);
+        $this->favoriteService->removeFromFavorites($logementId);
+
         return back()->with('success', 'Supprimé des favoris');
     }
 }
